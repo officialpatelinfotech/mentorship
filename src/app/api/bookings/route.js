@@ -11,6 +11,7 @@ export async function POST(req) {
 
         // Create new booking document based on the Booking model
         const newBooking = new Booking({
+            mentorId: body.mentorId,
             mentorName: body.mentorName,
             candidateName: body.name, // mapped from frontend form
             phone: body.phone,

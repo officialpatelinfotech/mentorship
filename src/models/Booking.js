@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const BookingSchema = new mongoose.Schema({
+    mentorId: {
+        type: String,
+        required: [true, 'Mentor ID is required.'],
+    },
     mentorName: {
         type: String,
         required: [true, 'Mentor name is required.'],

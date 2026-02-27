@@ -7,6 +7,7 @@ import "./BookSession.css";
 // To keep it simple, we'll redefine the same list or fetch it if it were an API.
 const professors = [
     {
+        id: "m_001",
         name: "Dr. Ananya Sharma",
         title: "Strategy & Consulting",
         university: "IIM Ahmedabad",
@@ -14,6 +15,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop"
     },
     {
+        id: "m_002",
         name: "Rajiv Mehta",
         title: "Investment Banking",
         university: "ISB Hyderabad",
@@ -21,6 +23,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop"
     },
     {
+        id: "m_003",
         name: "Priya Kapoor",
         title: "Product Management",
         university: "IIM Bangalore",
@@ -28,6 +31,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop"
     },
     {
+        id: "m_004",
         name: "Arjun Reddy",
         title: "Entrepreneurship",
         university: "IIM Calcutta",
@@ -35,6 +39,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop"
     },
     {
+        id: "m_005",
         name: "Sneha Patel",
         title: "Marketing & Brand Strategy",
         university: "XLRI Jamshedpur",
@@ -42,6 +47,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=1974&auto=format&fit=crop"
     },
     {
+        id: "m_006",
         name: "Vikram Singh",
         title: "Operations Management",
         university: "IIM Ahmedabad",
@@ -49,6 +55,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
     },
     {
+        id: "m_007",
         name: "Kavita Nair",
         title: "Human Resources",
         university: "IIM Bangalore",
@@ -56,6 +63,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?q=80&w=1972&auto=format&fit=crop"
     },
     {
+        id: "m_008",
         name: "Rohan Desai",
         title: "Private Equity",
         university: "ISB Hyderabad",
@@ -63,6 +71,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop"
     },
     {
+        id: "m_009",
         name: "Meera Joshi",
         title: "Data Analytics",
         university: "IIM Calcutta",
@@ -70,6 +79,7 @@ const professors = [
         image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?q=80&w=1974&auto=format&fit=crop"
     },
     {
+        id: "m_010",
         name: "Amit Verma",
         title: "Supply Chain & Logistics",
         university: "XLRI Jamshedpur",
@@ -97,6 +107,9 @@ const BookSession = () => {
     const [selectedTime, setSelectedTime] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+    // Step state
+    const [step, setStep] = useState(1);
 
     // Submission state
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -183,11 +196,20 @@ const BookSession = () => {
         return slots;
     };
 
+    const handleNextStep = () => {
+        if (!formData.name || !formData.phone || !formData.email || !formData.qualification || !formData.sessionFor) {
+            setSubmitStatus({ type: 'error', message: 'Please fill in all candidate details.' });
+            return;
+        }
+        setSubmitStatus(null);
+        setStep(2);
+    };
+
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.phone || !formData.email || !formData.qualification || !formData.sessionFor) {
-            setSubmitStatus({ type: 'error', message: 'Please fill in all candidate details.' });
+        if (!selectedDate || !selectedTime) {
+            setSubmitStatus({ type: 'error', message: 'Please select a date and time.' });
             return;
         }
 
@@ -197,6 +219,7 @@ const BookSession = () => {
         try {
             const payload = {
                 ...formData,
+                mentorId: mentor.id,
                 mentorName: mentor.name,
                 sessionDate: selectedDate.toISOString(),
                 sessionTime: selectedTime
@@ -266,69 +289,29 @@ const BookSession = () => {
                 {/* Right Side: Booking Form & Calendar */}
                 <div className="book-right">
                     <div className="book-form-section">
-                        <h3>Select Date & Time</h3>
-
-                        <div className="calendar-time-wrapper">
-                            {/* Calendar View */}
-                            <div className={`calendar-container ${selectedDate ? 'shrink' : ''}`}>
-                                <div className="cal-header">
-                                    <button onClick={prevMonth} className="cal-nav">&lt;</button>
-                                    <span className="cal-month">{monthNames[currentMonth]} {currentYear}</span>
-                                    <button onClick={nextMonth} className="cal-nav">&gt;</button>
-                                </div>
-                                <div className="cal-weekdays">
-                                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-                                </div>
-                                <div className="cal-grid">
-                                    {generateCalendar()}
-                                </div>
-                            </div>
-
-                            {/* Time Slots View (Shows only when date selected) */}
-                            {selectedDate && (
-                                <div className="time-slots-container">
-                                    <div className="time-header">
-                                        <h4>{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h4>
-                                    </div>
-                                    <div className="slots-list">
-                                        {generateTimeSlots().map((time, idx) => (
-                                            <button
-                                                key={idx}
-                                                className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
-                                                onClick={() => setSelectedTime(time)}
-                                            >
-                                                {time}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Candidate Details Form */}
-                        {selectedDate && selectedTime && (
-                            <div className="candidate-form fade-in">
+                        {step === 1 && (
+                            <div className="candidate-form fade-in" style={{ paddingTop: 0, borderTop: 'none' }}>
                                 <h3>Candidate Details</h3>
-                                <p className="selected-slot-text">
-                                    Booking for: <strong>{selectedDate.toLocaleDateString()} at {selectedTime}</strong>
+                                <p className="selected-slot-text" style={{ background: 'transparent', padding: 0, borderLeft: 'none', marginBottom: '24px' }}>
+                                    Please tell us a bit about yourself.
                                 </p>
 
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>Full Name *</label>
-                                        <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="John Doe" required disabled={isSubmitting} />
+                                        <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="John Doe" required />
                                     </div>
                                     <div className="form-group">
                                         <label>Phone Number *</label>
-                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 9876543210" required disabled={isSubmitting} />
+                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 9876543210" required />
                                     </div>
                                     <div className="form-group full-width">
                                         <label>Email Address *</label>
-                                        <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" required disabled={isSubmitting} />
+                                        <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" required />
                                     </div>
                                     <div className="form-group">
                                         <label>Latest Qualification *</label>
-                                        <select name="qualification" value={formData.qualification} onChange={handleInputChange} required disabled={isSubmitting}>
+                                        <select name="qualification" value={formData.qualification} onChange={handleInputChange} required>
                                             <option value="" disabled>Select Qualification</option>
                                             <option value="B.Tech/B.E.">B.Tech/B.E.</option>
                                             <option value="B.Com/BBA">B.Com/BBA</option>
@@ -339,7 +322,7 @@ const BookSession = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Booking Session For *</label>
-                                        <select name="sessionFor" value={formData.sessionFor} onChange={handleInputChange} required disabled={isSubmitting}>
+                                        <select name="sessionFor" value={formData.sessionFor} onChange={handleInputChange} required>
                                             <option value="" disabled>Select Reason</option>
                                             <option value="MBA Admissions Strategy">MBA Admissions Strategy</option>
                                             <option value="Resume/Essay Review">Resume/Essay Review</option>
@@ -364,14 +347,89 @@ const BookSession = () => {
                                     </div>
                                 )}
 
-                                <button
-                                    className="confirm-booking-btn"
-                                    onClick={handleBookingSubmit}
-                                    disabled={isSubmitting}
-                                    style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
-                                >
-                                    {isSubmitting ? 'Booking...' : 'Confirm Booking'}
-                                </button>
+                                <button className="confirm-booking-btn" onClick={handleNextStep}>Next ➔</button>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="calendar-section fade-in">
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', gap: '15px' }}>
+                                    <button
+                                        onClick={() => { setStep(1); setSubmitStatus(null); }}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold', color: '#64748b' }}
+                                    >
+                                        &larr; Back
+                                    </button>
+                                    <h3 style={{ margin: 0 }}>Select Date & Time</h3>
+                                </div>
+
+                                <div className="calendar-time-wrapper">
+                                    {/* Calendar View */}
+                                    <div className={`calendar-container ${selectedDate ? 'shrink' : ''}`}>
+                                        <div className="cal-header">
+                                            <button onClick={prevMonth} className="cal-nav">&lt;</button>
+                                            <span className="cal-month">{monthNames[currentMonth]} {currentYear}</span>
+                                            <button onClick={nextMonth} className="cal-nav">&gt;</button>
+                                        </div>
+                                        <div className="cal-weekdays">
+                                            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                                        </div>
+                                        <div className="cal-grid">
+                                            {generateCalendar()}
+                                        </div>
+                                    </div>
+
+                                    {/* Time Slots View (Shows only when date selected) */}
+                                    {selectedDate && (
+                                        <div className="time-slots-container">
+                                            <div className="time-header">
+                                                <h4>{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h4>
+                                            </div>
+                                            <div className="slots-list">
+                                                {generateTimeSlots().map((time, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
+                                                        onClick={() => setSelectedTime(time)}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {selectedDate && selectedTime && (
+                                    <p className="selected-slot-text" style={{ marginTop: '20px' }}>
+                                        Booking for: <strong>{selectedDate.toLocaleDateString()} at {selectedTime}</strong>
+                                    </p>
+                                )}
+
+                                {submitStatus && (
+                                    <div className={`submit-status ${submitStatus.type}`} style={{
+                                        padding: '12px',
+                                        borderRadius: '6px',
+                                        marginBottom: '20px',
+                                        backgroundColor: submitStatus.type === 'error' ? '#fee2e2' : '#dcfce7',
+                                        color: submitStatus.type === 'error' ? '#b91c1c' : '#15803d',
+                                        fontWeight: '500',
+                                        fontSize: '0.9rem'
+                                    }}>
+                                        {submitStatus.message}
+                                    </div>
+                                )}
+
+                                {selectedDate && selectedTime && (
+                                    <button
+                                        className="confirm-booking-btn"
+                                        onClick={handleBookingSubmit}
+                                        disabled={isSubmitting}
+                                        style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                                    >
+                                        {isSubmitting ? 'Booking...' : 'Confirm Booking'}
+                                    </button>
+                                )}
                             </div>
                         )}
 
