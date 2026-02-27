@@ -1,0 +1,274 @@
+.about-page {
+    width: 100%;
+    background: #fff;
+}
+
+/* Hero heading */
+.about-hero {
+    padding: 100px 6% 50px;
+    background: #fff;
+}
+
+.about-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #000;
+    margin: 0 0 16px 0;
+    text-transform: none !important;
+    letter-spacing: -0.03em !important;
+    line-height: 1;
+}
+
+.about-subtitle {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.65;
+    max-width: 620px;
+    margin: 0;
+}
+
+/* Story split — text left, image right */
+.about-split {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 0;
+    align-items: stretch;
+    padding: 10px 0 50px 6%;
+    background: #fff;
+}
+
+.about-split-text {
+    padding: 20px 50px 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-split-text p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.85;
+    margin: 0 0 22px 0;
+}
+
+.about-split-text p:last-child {
+    margin-bottom: 0;
+}
+
+.about-split-image {
+    overflow: hidden;
+}
+
+.about-split-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Mission split — image left, text right */
+.about-mission {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 0;
+    align-items: stretch;
+    padding: 60px 6% 60px 0;
+    background: #fff;
+}
+
+.about-mission-image {
+    overflow: hidden;
+}
+
+.about-mission-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+.about-mission-text {
+    padding: 30px 0 30px 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-mission-text h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 22px 0;
+    line-height: 1.2;
+    text-transform: none !important;
+    letter-spacing: -0.02em !important;
+}
+
+.about-mission-text p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.85;
+    margin: 0 0 24px 0;
+}
+
+.about-signature {
+    font-size: 0.92rem !important;
+    color: #333 !important;
+    line-height: 1.6 !important;
+    margin-top: 4px !important;
+}
+
+.about-signature strong {
+    font-weight: 700;
+    color: #000;
+    display: block;
+}
+
+/* CTA Banner */
+.about-cta {
+    position: relative;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.about-cta-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.about-cta-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.42) 100%);
+    z-index: 1;
+}
+
+.about-cta-content {
+    position: relative;
+    z-index: 2;
+    padding: 70px 8%;
+    max-width: 800px;
+}
+
+.about-cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff !important;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+    text-transform: none !important;
+    letter-spacing: -0.02em !important;
+}
+
+.about-cta-content p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8) !important;
+    line-height: 1.7;
+    margin: 0 0 28px 0;
+    font-weight: 300;
+}
+
+.about-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.about-btn {
+    padding: 13px 30px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.about-btn-primary {
+    background: #fff;
+    color: #000;
+    border: 2px solid #fff;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.about-btn-primary:hover {
+    background: transparent;
+    color: #fff;
+}
+
+.about-btn-secondary {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.about-btn-secondary:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .about-hero {
+        padding: 70px 5% 30px;
+    }
+
+    .about-hero h1 {
+        font-size: 2.4rem;
+    }
+
+    .about-split {
+        grid-template-columns: 1fr;
+        padding: 20px 5%;
+    }
+
+    .about-split-text {
+        padding: 20px 0;
+    }
+
+    .about-split-image img {
+        min-height: 280px;
+    }
+
+    .about-mission {
+        grid-template-columns: 1fr;
+        padding: 20px 5%;
+    }
+
+    .about-mission-image {
+        order: -1;
+    }
+
+    .about-mission-image img {
+        min-height: 280px;
+    }
+
+    .about-mission-text {
+        padding: 20px 0;
+    }
+
+    .about-cta-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .about-cta-buttons {
+        flex-direction: column;
+    }
+
+    .about-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

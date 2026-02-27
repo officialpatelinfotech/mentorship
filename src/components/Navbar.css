@@ -1,0 +1,156 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 6%;
+    background: #000;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+}
+
+.logo-dot {
+    color: #fff;
+    opacity: 0.6;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 2.2rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.99rem;
+    transition: opacity 0.3s ease;
+    text-transform: capitalize;
+}
+
+.nav-link:hover {
+    opacity: 0.6;
+}
+
+.nav-link.active {
+    opacity: 1;
+}
+
+/* Hamburger button — hidden on desktop */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 1100;
+}
+
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Animated X when open */
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Mobile overlay */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.active {
+    opacity: 1;
+}
+
+/* Mobile slide-out menu */
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    z-index: 1080;
+    flex-direction: column;
+    padding: 100px 40px 40px;
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu.open {
+    right: 0;
+}
+
+.mobile-link {
+    color: #000;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: opacity 0.3s ease;
+}
+
+.mobile-link:hover {
+    opacity: 0.6;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+    .navbar-links {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .mobile-overlay {
+        display: block;
+        pointer-events: none;
+    }
+
+    .mobile-overlay.active {
+        pointer-events: auto;
+    }
+
+    .mobile-menu {
+        display: flex;
+    }
+}

@@ -1,0 +1,117 @@
+.footer {
+    background: #000;
+    padding: 50px 6% 40px;
+    color: #fff;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+/* Brand column */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+}
+
+.footer-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff !important;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+    text-transform: none !important;
+}
+
+.footer-logo span {
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.footer-tagline {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-bottom: auto;
+}
+
+.footer-legal {
+    margin-top: 40px;
+}
+
+.footer-legal p {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.4) !important;
+    line-height: 1.6;
+}
+
+.footer-legal a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.footer-legal a:hover {
+    color: #fff;
+}
+
+/* Nav columns */
+.footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-nav-top {
+    display: flex;
+    gap: 2.5rem;
+}
+
+.footer-nav-top a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+}
+
+.footer-nav-top a:hover {
+    opacity: 0.6;
+}
+
+.footer-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer-nav-list a {
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 400;
+    transition: color 0.2s ease;
+}
+
+.footer-nav-list a:hover {
+    color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .footer-main {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .footer-nav-top {
+        flex-wrap: wrap;
+        gap: 1.2rem;
+    }
+
+    .footer-legal {
+        margin-top: 24px;
+    }
+}
