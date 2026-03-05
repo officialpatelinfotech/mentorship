@@ -14,6 +14,12 @@ export const metadata = {
   description: "Empowering your MBA journey with expert guidance.",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={poppins.variable}>

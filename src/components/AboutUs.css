@@ -239,7 +239,9 @@
     }
 
     .about-split-image img {
-        min-height: 280px;
+        min-height: auto;
+        max-height: 300px;
+        object-fit: contain;
     }
 
     .about-mission {
@@ -252,7 +254,9 @@
     }
 
     .about-mission-image img {
-        min-height: 280px;
+        min-height: auto;
+        max-height: 300px;
+        object-fit: contain;
     }
 
     .about-mission-text {

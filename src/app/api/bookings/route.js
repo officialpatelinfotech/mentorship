@@ -1,6 +1,48 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/mongodb';
 import Booking from '../../../models/Booking';
+import mongoose from 'mongoose';
+import User from '@/models/User';
+import Professional from '@/models/Professional';
+
+export async function GET(req) {
+    try {
+        await dbConnect();
+
+        const { searchParams } = new URL(req.url);
+        const role = searchParams.get('role');
+        const email = searchParams.get('email');
+        const mentorId = searchParams.get('mentorId'); // If passed explicitly
+
+        let query = {};
+
+        if (role === 'student' && email) {
+            query = { email: email };
+        } else if (role === 'professional') {
+            // Mentor can be looked up by mentorName or mentorId if passed
+            // In a real app we'd attach mentorId directly to the booked session from the logged in user
+            if (mentorId) {
+                query = { mentorId: mentorId };
+            } else if (email) {
+                // Look up the professional's mentorId from their User account.
+                const user = await User.findOne({ email });
+                if (user && user.mentorId) {
+                    query = { mentorId: user.mentorId };
+                } else {
+                    return NextResponse.json({ success: true, data: [] }, { status: 200 });
+                }
+            }
+        }
+
+        const bookings = await Booking.find(query).sort({ sessionDate: 1 }).lean();
+        const safeBookings = bookings.map(b => ({ ...b, _id: b._id.toString() }));
+
+        return NextResponse.json({ success: true, data: safeBookings }, { status: 200 });
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    }
+}
 
 export async function POST(req) {
     try {

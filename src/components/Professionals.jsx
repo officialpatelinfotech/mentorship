@@ -1,84 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Professionals.css";
-
-const professors = [
-    {
-        name: "Dr. Ananya Sharma",
-        title: "Strategy & Consulting",
-        university: "IIM Ahmedabad",
-        profession: "Consultant",
-        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop"
-    },
-    {
-        name: "Rajiv Mehta",
-        title: "Investment Banking",
-        university: "ISB Hyderabad",
-        profession: "Finance",
-        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        name: "Priya Kapoor",
-        title: "Product Management",
-        university: "IIM Bangalore",
-        profession: "Technology",
-        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop"
-    },
-    {
-        name: "Arjun Reddy",
-        title: "Entrepreneurship",
-        university: "IIM Calcutta",
-        profession: "Entrepreneur",
-        image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        name: "Sneha Patel",
-        title: "Marketing & Brand Strategy",
-        university: "XLRI Jamshedpur",
-        profession: "Marketing",
-        image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        name: "Vikram Singh",
-        title: "Operations Management",
-        university: "IIM Ahmedabad",
-        profession: "Operations",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        name: "Kavita Nair",
-        title: "Human Resources",
-        university: "IIM Bangalore",
-        profession: "Consultant",
-        image: "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?q=80&w=1972&auto=format&fit=crop"
-    },
-    {
-        name: "Rohan Desai",
-        title: "Private Equity",
-        university: "ISB Hyderabad",
-        profession: "Finance",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-        name: "Meera Joshi",
-        title: "Data Analytics",
-        university: "IIM Calcutta",
-        profession: "Technology",
-        image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        name: "Amit Verma",
-        title: "Supply Chain & Logistics",
-        university: "XLRI Jamshedpur",
-        profession: "Operations",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop"
-    }
-];
 
 const universities = ["All", "IIM Ahmedabad", "IIM Bangalore", "IIM Calcutta", "ISB Hyderabad", "XLRI Jamshedpur"];
 const professions = ["All", "Consultant", "Finance", "Technology", "Marketing", "Entrepreneur", "Operations"];
 
 const Professionals = () => {
+    const [professors, setProfessors] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [selectedUniversity, setSelectedUniversity] = useState("All");
     const [selectedProfession, setSelectedProfession] = useState("All");
     const [selectedProfessor, setSelectedProfessor] = useState(null);
@@ -96,10 +26,31 @@ const Professionals = () => {
     const startIndex = (currentPage - 1) * cardsPerPage;
     const paginated = filtered.slice(startIndex, startIndex + cardsPerPage);
 
+    useEffect(() => {
+        const fetchProfessionals = async () => {
+            try {
+                const res = await fetch('/api/professionals');
+                const data = await res.json();
+                if (data.success) {
+                    setProfessors(data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch professionals", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProfessionals();
+    }, []);
+
     const handleFilterChange = (setter) => (e) => {
         setter(e.target.value);
         setCurrentPage(1);
     };
+
+    if (isLoading) {
+        return <div className="prof-loading" style={{ textAlign: "center", padding: "100px 0", height: "100vh", color: "var(--text-main)" }}>Loading professionals...</div>;
+    }
 
     return (
         <div className="professionals-page">
@@ -109,7 +60,7 @@ const Professionals = () => {
                 <div className="prof-hero-content">
                     <h1>Our Professionals</h1>
                     <p>Mentors from the world&apos;s top business schools, ready to guide your journey.</p>
-                    <a href="/book-session" className="prof-hero-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Book a Session</a>
+                    {/* <a href="/book-session" className="prof-hero-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Book a Session</a> */}
                 </div>
             </section>
 
@@ -155,7 +106,7 @@ const Professionals = () => {
                                     <p className="prof-card-uni">{prof.university}</p>
                                     <div className="prof-card-buttons">
                                         <a
-                                            href={`/book-session?mentor=${encodeURIComponent(prof.name)}`}
+                                            href={`/book-session?mentor=${prof.mentorId}`}
                                             className="prof-card-btn prof-card-btn-primary"
                                             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
                                         >
@@ -250,7 +201,7 @@ const Professionals = () => {
                                     {selectedProfessor.name} brings extensive experience in {selectedProfessor.profession.toLowerCase()}, having graduated from {selectedProfessor.university}. They specialize in helping candidates craft compelling narratives for their applications and preparing them for rigorous interviews.
                                 </p>
                                 <a
-                                    href={`/book-session?mentor=${encodeURIComponent(selectedProfessor.name)}`}
+                                    href={`/book-session?mentor=${selectedProfessor.mentorId}`}
                                     className="prof-modal-btn"
                                     style={{ textDecoration: 'none', display: 'inline-block' }}
                                 >

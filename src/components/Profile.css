@@ -1,0 +1,478 @@
+.profile-page {
+    min-height: calc(100vh - 80px);
+    background: #f4f6f8;
+    padding: 100px 5% 60px;
+}
+
+.profile-loading {
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.profile-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ======================== */
+/* Profile Header Card      */
+/* ======================== */
+
+.profile-header {
+    background: #fff;
+    padding: 32px;
+    border-radius: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.profile-info h2 {
+    font-size: 1.8rem;
+    color: #111;
+    margin: 0 0 6px 0;
+    text-transform: none !important;
+    letter-spacing: -0.02em !important;
+}
+
+.profile-info p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0 0 12px 0;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.student {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.role-badge.professional {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-badge.admin {
+    background: #fecaca;
+    color: #b91c1c;
+}
+
+.mentor-id-text {
+    margin-top: 10px !important;
+    font-size: 0.9rem !important;
+    color: #333 !important;
+}
+
+.logout-btn {
+    background: none;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.logout-btn:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.edit-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.edit-btn:hover {
+    background: #f0f0f0;
+    border-color: #bbb;
+    color: #111;
+}
+
+/* Edit Profile Form */
+.edit-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.edit-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.edit-form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-form-group input {
+    padding: 10px 14px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: #111;
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.edit-form-group input:focus {
+    border-color: #111;
+    background: #fff;
+}
+
+.edit-form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.save-btn {
+    padding: 8px 20px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.save-btn:hover {
+    background: #333;
+}
+
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancel-btn {
+    padding: 8px 20px;
+    background: none;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+    background: #f5f5f5;
+}
+
+.edit-status {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.edit-status.success {
+    color: #15803d;
+}
+
+.edit-status.error {
+    color: #b91c1c;
+}
+
+/* ======================== */
+/* Stats Cards              */
+/* ======================== */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 2.8rem;
+    color: #111;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0;
+}
+
+/* ======================== */
+/* Bookings Section         */
+/* ======================== */
+
+.profile-bookings {
+    background: #fff;
+    padding: 32px;
+    border-radius: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.profile-bookings>h3 {
+    font-size: 1.3rem;
+    color: #111;
+    margin: 0 0 24px 0;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 48px 20px;
+    color: #888;
+}
+
+.no-bookings p {
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+}
+
+.profile-cta-btn {
+    background: #111;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.profile-cta-btn:hover {
+    background: #333;
+    transform: translateY(-1px);
+}
+
+/* ======================== */
+/* Booking Cards            */
+/* ======================== */
+
+.bookings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+.booking-card {
+    border: 1px solid #eee;
+    border-radius: 0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.booking-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.booking-card.past {
+    opacity: 0.65;
+}
+
+.booking-card-header {
+    background: #fafafa;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.upcoming {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-badge.past {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.booking-date {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.booking-card-body {
+    padding: 20px;
+}
+
+.booking-reason {
+    font-size: 1.05rem;
+    color: #111;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+.booking-person {
+    font-size: 0.92rem;
+    color: #555;
+    margin: 0 0 14px 0;
+    line-height: 1.5;
+}
+
+.booking-person strong {
+    color: #222;
+}
+
+.booking-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #e5e5e5;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: #444;
+    font-weight: 500;
+}
+
+.detail-item svg {
+    color: #999;
+}
+
+/* ======================== */
+/* Animations               */
+/* ======================== */
+
+.fade-in {
+    animation: profileFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes profileFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ======================== */
+/* Mobile Responsive        */
+/* ======================== */
+
+@media (max-width: 600px) {
+    .profile-page {
+        padding: 80px 4% 40px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        padding: 24px;
+        gap: 16px;
+    }
+
+    .profile-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .profile-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 20px 16px;
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+    }
+
+    .profile-bookings {
+        padding: 24px 16px;
+    }
+
+    .booking-card-body {
+        padding: 16px;
+    }
+}

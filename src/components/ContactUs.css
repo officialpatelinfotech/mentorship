@@ -27,8 +27,8 @@
 
 .contact-intro-image img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     display: block;
     max-height: 400px;
 }
@@ -256,6 +256,12 @@
     .contact-intro {
         grid-template-columns: 1fr;
         padding: 0 5% 40px;
+    }
+
+    .contact-intro-image img {
+        height: auto;
+        max-height: 300px;
+        object-fit: contain;
     }
 
     .contact-intro-text {

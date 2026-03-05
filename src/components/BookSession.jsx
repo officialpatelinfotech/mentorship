@@ -3,95 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import "./BookSession.css";
 
-// Temporarily importing professors list here or you can fetch it. For now hardcode or pass it.
-// To keep it simple, we'll redefine the same list or fetch it if it were an API.
-const professors = [
-    {
-        id: "m_001",
-        name: "Dr. Ananya Sharma",
-        title: "Strategy & Consulting",
-        university: "IIM Ahmedabad",
-        profession: "Consultant",
-        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop"
-    },
-    {
-        id: "m_002",
-        name: "Rajiv Mehta",
-        title: "Investment Banking",
-        university: "ISB Hyderabad",
-        profession: "Finance",
-        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        id: "m_003",
-        name: "Priya Kapoor",
-        title: "Product Management",
-        university: "IIM Bangalore",
-        profession: "Technology",
-        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop"
-    },
-    {
-        id: "m_004",
-        name: "Arjun Reddy",
-        title: "Entrepreneurship",
-        university: "IIM Calcutta",
-        profession: "Entrepreneur",
-        image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        id: "m_005",
-        name: "Sneha Patel",
-        title: "Marketing & Brand Strategy",
-        university: "XLRI Jamshedpur",
-        profession: "Marketing",
-        image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        id: "m_006",
-        name: "Vikram Singh",
-        title: "Operations Management",
-        university: "IIM Ahmedabad",
-        profession: "Operations",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        id: "m_007",
-        name: "Kavita Nair",
-        title: "Human Resources",
-        university: "IIM Bangalore",
-        profession: "Consultant",
-        image: "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?q=80&w=1972&auto=format&fit=crop"
-    },
-    {
-        id: "m_008",
-        name: "Rohan Desai",
-        title: "Private Equity",
-        university: "ISB Hyderabad",
-        profession: "Finance",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop"
-    },
-    {
-        id: "m_009",
-        name: "Meera Joshi",
-        title: "Data Analytics",
-        university: "IIM Calcutta",
-        profession: "Technology",
-        image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?q=80&w=1974&auto=format&fit=crop"
-    },
-    {
-        id: "m_010",
-        name: "Amit Verma",
-        title: "Supply Chain & Logistics",
-        university: "XLRI Jamshedpur",
-        profession: "Operations",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop"
-    }
-];
-
 const BookSession = () => {
     const searchParams = useSearchParams();
-    const mentorName = searchParams.get("mentor");
+    const mentorId = searchParams.get("mentor");
     const [mentor, setMentor] = useState(null);
+    const [isLoadingMentor, setIsLoadingMentor] = useState(true);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -99,8 +15,9 @@ const BookSession = () => {
         phone: "",
         email: "",
         qualification: "",
-        sessionFor: ""
+        sessionFor: "General Guidance"
     });
+    const [user, setUser] = useState(null);
 
     // Calendar state
     const [selectedDate, setSelectedDate] = useState(null);
@@ -116,13 +33,26 @@ const BookSession = () => {
     const [submitStatus, setSubmitStatus] = useState(null); // { type: 'success' | 'error', message: '' }
 
     useEffect(() => {
-        if (mentorName) {
-            const foundMentor = professors.find((p) => p.name === mentorName);
-            setMentor(foundMentor || professors[0]); // Default to first if not found
-        } else {
-            setMentor(professors[0]); // Default to first if no param
-        }
-    }, [mentorName]);
+        const fetchMentor = async () => {
+            try {
+                const res = await fetch('/api/professionals');
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    if (mentorId) {
+                        const foundMentor = data.data.find((p) => p.mentorId === mentorId);
+                        setMentor(foundMentor || data.data[0]);
+                    } else {
+                        setMentor(data.data[0]);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch professionals", error);
+            } finally {
+                setIsLoadingMentor(false);
+            }
+        };
+        fetchMentor();
+    }, [mentorId]);
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -219,7 +149,7 @@ const BookSession = () => {
         try {
             const payload = {
                 ...formData,
-                mentorId: mentor.id,
+                mentorId: mentor.mentorId,
                 mentorName: mentor.name,
                 sessionDate: selectedDate.toISOString(),
                 sessionTime: selectedTime
@@ -250,7 +180,8 @@ const BookSession = () => {
         }
     };
 
-    if (!mentor) return <div className="book-loading">Loading mentor details...</div>;
+    if (isLoadingMentor) return <div className="book-loading" style={{ textAlign: "center", padding: "100px 0", height: "100vh", color: "var(--text-main)" }}>Loading mentor details...</div>;
+    if (!mentor) return <div className="book-loading" style={{ textAlign: "center", padding: "100px 0", height: "100vh", color: "var(--text-main)" }}>Mentor not found.</div>;
 
     return (
         <div className="book-page">

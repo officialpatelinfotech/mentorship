@@ -438,14 +438,15 @@
     }
 
     .prof-card {
-        height: 380px;
+        height: auto;
+        min-height: 320px;
     }
 
     .prof-card-info h2 {
         font-size: 1.4rem;
     }
 
-    .prof-card-btn {
+    .prof-card-buttons {
         opacity: 1;
         transform: translateY(0);
     }
@@ -595,8 +596,23 @@
 }
 
 @media (max-width: 768px) {
+    .prof-modal-body {
+        flex-direction: column;
+    }
+
+    .prof-modal-image {
+        min-width: 100%;
+    }
+
+    .prof-modal-image img {
+        min-height: auto;
+        max-height: 280px;
+        object-fit: contain;
+    }
+
     .prof-modal-text {
         padding: 30px 20px;
+        min-width: 100%;
     }
 
     .prof-modal-text h2 {

@@ -239,7 +239,13 @@
     }
 
     .guidance-image {
-        min-height: 350px;
+        min-height: auto;
+    }
+
+    .guidance-image img {
+        height: auto;
+        max-height: 350px;
+        object-fit: contain;
     }
 
     .guidance-image-bg {
