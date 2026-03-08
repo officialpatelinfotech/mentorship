@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "./Profile.css";
+import SlotManager from "./SlotManager";
 
 const Profile = () => {
     const router = useRouter();
@@ -12,6 +13,7 @@ const Profile = () => {
     const [editData, setEditData] = useState({ name: '', email: '' });
     const [editStatus, setEditStatus] = useState({ type: '', message: '' });
     const [isSaving, setIsSaving] = useState(false);
+    const [activeTab, setActiveTab] = useState('bookings');
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -180,60 +182,88 @@ const Profile = () => {
                     </div>
                 </div>
 
-                {/* Bookings List */}
-                <div className="profile-bookings">
-                    <h3>Your Sessions</h3>
+                {/* Tab Navigation for Professionals */}
+                {user.role === 'professional' && (
+                    <div className="profile-tabs">
+                        <button
+                            className={`profile-tab ${activeTab === 'bookings' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('bookings')}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            Booked Sessions
+                        </button>
+                        <button
+                            className={`profile-tab ${activeTab === 'availability' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('availability')}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            Manage Availability
+                        </button>
+                    </div>
+                )}
 
-                    {bookings.length === 0 ? (
-                        <div className="no-bookings">
-                            <p>You {"don't"} have any bookings yet.</p>
-                            {user.role === 'student' && (
-                                <a href="/professionals" className="profile-cta-btn">Book a Mentor Now</a>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="bookings-grid">
-                            {bookings.map((booking) => {
-                                const isUpcoming = new Date(booking.sessionDate) >= new Date();
-                                return (
-                                    <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                        <div className="booking-card-header">
-                                            <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                                {isUpcoming ? 'Upcoming' : 'Completed'}
-                                            </span>
-                                            <span className="booking-date">
-                                                {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </span>
-                                        </div>
-                                        <div className="booking-card-body">
-                                            <h4 className="booking-reason">{booking.sessionReason}</h4>
+                {/* Booked Sessions Tab / Default for Students */}
+                {(user.role === 'student' || activeTab === 'bookings') && (
+                    <div className="profile-bookings">
+                        <h3>Your Sessions</h3>
 
-                                            {/* Show relevant counter-party based on role */}
-                                            {user.role === 'student' ? (
-                                                <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
-                                            ) : (
-                                                <p className="booking-person"><strong>Candidate:</strong> {booking.candidateName} <br /><small>({booking.email})</small></p>
-                                            )}
+                        {bookings.length === 0 ? (
+                            <div className="no-bookings">
+                                <p>You {"don't"} have any bookings yet.</p>
+                                {user.role === 'student' && (
+                                    <a href="/professionals" className="profile-cta-btn">Book a Mentor Now</a>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bookings-grid">
+                                {bookings.map((booking) => {
+                                    const isUpcoming = new Date(booking.sessionDate) >= new Date();
+                                    return (
+                                        <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                            <div className="booking-card-header">
+                                                <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                                    {isUpcoming ? 'Upcoming' : 'Completed'}
+                                                </span>
+                                                <span className="booking-date">
+                                                    {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                </span>
+                                            </div>
+                                            <div className="booking-card-body">
+                                                <h4 className="booking-reason">{booking.sessionReason}</h4>
 
-                                            <div className="booking-details">
-                                                <div className="detail-item">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                                    {booking.sessionTime}
-                                                </div>
-                                                {user.role === 'professional' && (
-                                                    <div className="detail-item">
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                                        {booking.phone}
-                                                    </div>
+                                                {user.role === 'student' ? (
+                                                    <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
+                                                ) : (
+                                                    <p className="booking-person"><strong>Candidate:</strong> {booking.candidateName} <br /><small>({booking.email})</small></p>
                                                 )}
+
+                                                <div className="booking-details">
+                                                    <div className="detail-item">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                        {booking.sessionTime}
+                                                    </div>
+                                                    {user.role === 'professional' && (
+                                                        <div className="detail-item">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                                            {booking.phone}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Manage Availability Tab — Professionals only */}
+                {user.role === 'professional' && activeTab === 'availability' && user.mentorId && (
+                    <div className="profile-bookings">
+                        <SlotManager mentorId={user.mentorId} />
+                    </div>
+                )}
 
             </div>
         </div>

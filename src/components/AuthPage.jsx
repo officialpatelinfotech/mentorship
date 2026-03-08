@@ -14,6 +14,11 @@ const AuthPage = () => {
         email: "",
         password: "",
         role: "student",
+        phone: "",
+        latestQualification: "",
+        interest: "",
+        qualification: "",
+        profession: "",
     });
 
     const handleInputChange = (e) => {
@@ -23,7 +28,7 @@ const AuthPage = () => {
     const toggleMode = () => {
         setIsLogin(!isLogin);
         setErrorMessage("");
-        setFormData({ name: "", email: "", password: "", role: "student" });
+        setFormData({ name: "", email: "", password: "", role: "student", phone: "", latestQualification: "", interest: "", qualification: "", profession: "" });
     };
 
     const handleSubmit = async (e) => {
@@ -43,8 +48,6 @@ const AuthPage = () => {
             const data = await res.json();
 
             if (res.ok) {
-                // Redirect on success
-                // Force a hard navigation to refresh server state (like Navbar)
                 window.location.assign("/profile");
             } else {
                 setErrorMessage(data.message || "Authentication failed.");
@@ -56,6 +59,9 @@ const AuthPage = () => {
             setIsSubmitting(false);
         }
     };
+
+    const isStudentSignup = !isLogin && formData.role === "student";
+    const isProfessionalSignup = !isLogin && formData.role === "professional";
 
     return (
         <div className="auth-page">
@@ -72,26 +78,88 @@ const AuthPage = () => {
                         <>
                             <div className="form-group">
                                 <label>Full Name</label>
-                                <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
+                                <input type="text" name="name" placeholder="Enter your full name" value={formData.name} onChange={handleInputChange} required />
                             </div>
                             <div className="form-group">
                                 <label>I am a...</label>
                                 <select name="role" value={formData.role} onChange={handleInputChange} required>
                                     <option value="student">Student / Candidate</option>
                                     <option value="professional">Professional / Mentor</option>
-                                    {/* Admin requires manual DB creation for security */}
                                 </select>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Student-specific fields */}
+                    {isStudentSignup && (
+                        <>
+                            <div className="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" name="phone" placeholder="e.g. +91 98765 43210" value={formData.phone} onChange={handleInputChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Latest Qualification</label>
+                                <select name="latestQualification" value={formData.latestQualification} onChange={handleInputChange} required>
+                                    <option value="" disabled>Select your qualification</option>
+                                    <option value="High School">High School (12th)</option>
+                                    <option value="Undergraduate">Undergraduate (B.A / B.Sc / B.Com / BBA)</option>
+                                    <option value="Graduate">Graduate (B.Tech / B.E / Other)</option>
+                                    <option value="Postgraduate">Postgraduate (M.A / M.Sc / M.Com / MBA)</option>
+                                    <option value="Doctorate">Doctorate (Ph.D)</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Area of Interest</label>
+                                <select name="interest" value={formData.interest} onChange={handleInputChange} required>
+                                    <option value="" disabled>Select your interest</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Human Resources">Human Resources</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Business Analytics">Business Analytics</option>
+                                    <option value="Entrepreneurship">Entrepreneurship</option>
+                                    <option value="Strategy & Consulting">Strategy & Consulting</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="General Management">General Management</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Professional-specific fields */}
+                    {isProfessionalSignup && (
+                        <>
+                            <div className="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" name="phone" placeholder="e.g. +91 98765 43210" value={formData.phone} onChange={handleInputChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Qualification</label>
+                                <select name="qualification" value={formData.qualification} onChange={handleInputChange} required>
+                                    <option value="" disabled>Select your qualification</option>
+                                    <option value="Undergraduate">Undergraduate (B.A / B.Sc / B.Com / BBA)</option>
+                                    <option value="Graduate">Graduate (B.Tech / B.E / Other)</option>
+                                    <option value="Postgraduate">Postgraduate (M.A / M.Sc / M.Com / MBA)</option>
+                                    <option value="Doctorate">Doctorate (Ph.D)</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Profession</label>
+                                <input type="text" name="profession" placeholder="e.g. Management Consultant, Finance Manager" value={formData.profession} onChange={handleInputChange} required />
                             </div>
                         </>
                     )}
 
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                        <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} required />
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input type="password" name="password" value={formData.password} onChange={handleInputChange} required />
+                        <input type="password" name="password" placeholder="Create a strong password" value={formData.password} onChange={handleInputChange} required />
                     </div>
 
                     <button type="submit" className="auth-btn" disabled={isSubmitting}>

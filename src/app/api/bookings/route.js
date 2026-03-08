@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/mongodb';
 import Booking from '../../../models/Booking';
+import Slot from '../../../models/Slot';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import Professional from '@/models/Professional';
@@ -66,6 +67,12 @@ export async function POST(req) {
 
         // Save to the database
         await newBooking.save();
+
+        // Mark the corresponding slot as booked
+        await Slot.findOneAndUpdate(
+            { mentorId: body.mentorId, date: body.sessionDate?.split('T')[0], time: body.sessionTime, isBooked: false },
+            { isBooked: true }
+        );
 
         return NextResponse.json(
             { success: true, message: 'Booking successfully saved!', bookingId: newBooking._id },

@@ -1,0 +1,349 @@
+/* ===== Slot Manager ===== */
+.slot-manager {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.sm-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 6px 0;
+}
+
+.sm-subtitle {
+    color: #777;
+    font-size: 0.93rem;
+    margin: 0 0 28px 0;
+}
+
+/* Calendar — centered, compact */
+.sm-calendar {
+    max-width: 360px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fafafa;
+    margin-bottom: 28px;
+}
+
+.sm-cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.sm-cal-month {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #111;
+}
+
+.sm-cal-nav {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.sm-cal-nav:hover {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+.sm-cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #999;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.sm-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.sm-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #333;
+    font-weight: 500;
+}
+
+.sm-cal-day:hover:not(.empty):not(.disabled) {
+    background: #f0f0f0;
+}
+
+.sm-cal-day.selected {
+    background: #111;
+    color: #fff;
+    font-weight: 700;
+}
+
+.sm-cal-day.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.sm-cal-day.empty {
+    cursor: default;
+}
+
+/* Time Slots — below calendar */
+.sm-timeslots {
+    margin-top: 4px;
+}
+
+.sm-date-label {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 20px 0;
+}
+
+.sm-loading {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* Grouped time periods */
+.sm-group {
+    margin-bottom: 20px;
+}
+
+.sm-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sm-group-icon {
+    font-size: 1rem;
+}
+
+.sm-group-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Slots grid — compact rows */
+.sm-slots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sm-slot {
+    padding: 8px 16px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+    text-align: center;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.sm-slot:hover:not(:disabled) {
+    border-color: #111;
+}
+
+.sm-slot.selected {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+.sm-slot.saved {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+    cursor: default;
+}
+
+.sm-slot.booked {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Legend */
+.sm-legend {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0 16px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.legend-dot.selected {
+    background: #111;
+}
+
+.legend-dot.saved {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+.legend-dot.booked {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+}
+
+/* Actions row */
+.sm-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+/* Save Button */
+.sm-save-btn {
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.sm-save-btn:hover {
+    background: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sm-save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Status Message */
+.sm-status {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.sm-status.success {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.sm-status.error {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Saved Slots List */
+.sm-saved-list {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.sm-saved-list h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 12px 0;
+}
+
+.sm-saved-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sm-saved-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: #15803d;
+}
+
+.sm-saved-item.booked {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.sm-booked-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.8;
+}
+
+.sm-delete-btn {
+    background: none;
+    border: none;
+    color: #b91c1c;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+    font-weight: 700;
+    line-height: 1;
+    transition: opacity 0.2s;
+}
+
+.sm-delete-btn:hover {
+    opacity: 0.6;
+}

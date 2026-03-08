@@ -28,6 +28,28 @@ const UserSchema = new mongoose.Schema({
     mentorId: {
         type: String,
         default: null
+    },
+    // Optional: Only relevant if the user is a 'student'
+    phone: {
+        type: String,
+        default: null
+    },
+    latestQualification: {
+        type: String,
+        default: null
+    },
+    interest: {
+        type: String,
+        default: null
+    },
+    // Optional: Only relevant if the user is a 'professional'
+    qualification: {
+        type: String,
+        default: null
+    },
+    profession: {
+        type: String,
+        default: null
     }
 }, { timestamps: true });
 

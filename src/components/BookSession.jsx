@@ -28,6 +28,10 @@ const BookSession = () => {
     // Step state
     const [step, setStep] = useState(1);
 
+    // Slot state
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+
     // Submission state
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null); // { type: 'success' | 'error', message: '' }
@@ -111,20 +115,34 @@ const BookSession = () => {
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    // --- Time Slots Logic ---
-    const generateTimeSlots = () => {
-        const slots = [];
-        let startHour = 10; // 10 AM
-        let endHour = 17; // 5 PM (17:00)
-
-        for (let h = startHour; h < endHour; h++) {
-            for (let m = 0; m < 60; m += 15) {
-                const timeStr = `${h > 12 ? h - 12 : h}:${m === 0 ? "00" : m} ${h >= 12 ? "PM" : "AM"}`;
-                slots.push(timeStr);
+    // --- Fetch available slots from API when date is selected ---
+    useEffect(() => {
+        if (!selectedDate || !mentor) return;
+        const fetchSlots = async () => {
+            setIsLoadingSlots(true);
+            setSelectedTime(null);
+            try {
+                const y = selectedDate.getFullYear();
+                const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const d = String(selectedDate.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+                const res = await fetch(`/api/slots?mentorId=${mentor.mentorId}&date=${dateStr}`);
+                const data = await res.json();
+                if (data.success) {
+                    // Only show unbooked slots
+                    setAvailableSlots((data.data || []).filter(s => !s.isBooked));
+                } else {
+                    setAvailableSlots([]);
+                }
+            } catch (err) {
+                console.error('Error fetching slots:', err);
+                setAvailableSlots([]);
+            } finally {
+                setIsLoadingSlots(false);
             }
-        }
-        return slots;
-    };
+        };
+        fetchSlots();
+    }, [selectedDate, mentor]);
 
     const handleNextStep = () => {
         if (!formData.name || !formData.phone || !formData.email || !formData.qualification || !formData.sessionFor) {
@@ -317,15 +335,21 @@ const BookSession = () => {
                                                 <h4>{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h4>
                                             </div>
                                             <div className="slots-list">
-                                                {generateTimeSlots().map((time, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
-                                                        onClick={() => setSelectedTime(time)}
-                                                    >
-                                                        {time}
-                                                    </button>
-                                                ))}
+                                                {isLoadingSlots ? (
+                                                    <p style={{ color: '#999', fontSize: '0.9rem', padding: '10px' }}>Loading available slots...</p>
+                                                ) : availableSlots.length === 0 ? (
+                                                    <p style={{ color: '#999', fontSize: '0.9rem', padding: '10px' }}>No slots available for this date. Please try another date.</p>
+                                                ) : (
+                                                    availableSlots.map((slot, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            className={`time-slot ${selectedTime === slot.time ? 'selected' : ''}`}
+                                                            onClick={() => setSelectedTime(slot.time)}
+                                                        >
+                                                            {slot.time}
+                                                        </button>
+                                                    ))
+                                                )}
                                             </div>
                                         </div>
                                     )}

@@ -6,7 +6,7 @@ import { signToken } from '@/lib/auth';
 
 export async function POST(req) {
     try {
-        const { name, email, password, role } = await req.json();
+        const { name, email, password, role, phone, latestQualification, interest, qualification, profession } = await req.json();
 
         if (!name || !email || !password) {
             return NextResponse.json({ success: false, message: 'Please provide all required fields' }, { status: 400 });
@@ -41,6 +41,18 @@ export async function POST(req) {
             password: hashedPassword,
             role: assignedRole,
             mentorId,
+            // Student-specific fields
+            ...(assignedRole === 'student' && {
+                phone: phone || null,
+                latestQualification: latestQualification || null,
+                interest: interest || null,
+            }),
+            // Professional-specific fields
+            ...(assignedRole === 'professional' && {
+                phone: phone || null,
+                qualification: qualification || null,
+                profession: profession || null,
+            }),
         });
 
         // Generate JWT token using jose

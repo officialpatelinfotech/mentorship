@@ -262,6 +262,51 @@
 }
 
 /* ======================== */
+/* Profile Tabs             */
+/* ======================== */
+
+.profile-tabs {
+    display: flex;
+    gap: 0;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.profile-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.profile-tab:hover {
+    color: #333;
+    background: #fafafa;
+}
+
+.profile-tab.active {
+    color: #111;
+    border-bottom-color: #111;
+    background: #fff;
+}
+
+.profile-tab svg {
+    flex-shrink: 0;
+}
+
+/* ======================== */
 /* Bookings Section         */
 /* ======================== */
 
