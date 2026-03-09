@@ -60,7 +60,7 @@ export async function POST(req) {
             }
         }
 
-        return NextResponse.json({ success: true, message: `${inserted.length} slot(s) saved`, data: inserted }, { status: 201 });
+        return NextResponse.json({ success: true, message: `${inserted.length} slot(s) opened` }, { status: 201 });
     } catch (error) {
         console.error('Error saving slots:', error);
         return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });

@@ -3,7 +3,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f4f6f8;
+    background: #f4f6f8 url('/background-graphic.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     padding: 100px 20px 60px;
 }
 
@@ -95,6 +98,242 @@
     font-size: 0.8rem;
     color: #999;
     margin-top: 2px;
+}
+
+.field-error {
+    font-size: 0.8rem;
+    color: #b91c1c;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Photo Upload */
+.photo-upload-area {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.photo-upload-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px dashed #d0d5dd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    color: #888;
+}
+
+.photo-upload-label:hover {
+    border-color: #111;
+    background: #f0f0f0;
+    color: #111;
+}
+
+.photo-upload-label svg {
+    flex-shrink: 0;
+}
+
+.photo-upload-label span {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.photo-upload-label small {
+    font-size: 0.72rem;
+    color: #aaa;
+    margin-left: auto;
+}
+
+.photo-preview {
+    position: relative;
+    width: 90px;
+    height: 110px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #eee;
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-remove-btn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.photo-remove-btn:hover {
+    background: rgba(185, 28, 28, 0.9);
+}
+
+/* See Example Link Button */
+.example-link-btn {
+    background: none;
+    border: none;
+    color: #0369a1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-family: inherit;
+}
+
+.example-link-btn:hover {
+    color: #0c4a6e;
+}
+
+/* Example Professional Photo Modal */
+.example-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+.example-modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 380px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: modalSlideUp 0.25s ease-out;
+}
+
+.example-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #999;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.example-modal-close:hover {
+    background: #f0f0f0;
+    color: #111;
+}
+
+.example-modal h3 {
+    font-size: 1.1rem;
+    color: #111;
+    margin: 0 0 16px 0;
+    text-transform: none !important;
+    letter-spacing: -0.01em !important;
+}
+
+.example-modal-image {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    margin-bottom: 16px;
+}
+
+.example-modal-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.example-modal-tips {
+    margin-bottom: 20px;
+}
+
+.example-modal-tips p {
+    font-size: 0.88rem;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.example-modal-tips ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.example-modal-tips li {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.7;
+}
+
+.example-modal-ok-btn {
+    width: 100%;
+    padding: 11px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.example-modal-ok-btn:hover {
+    background: #333;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Submit Button */

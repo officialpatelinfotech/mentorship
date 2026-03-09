@@ -11,6 +11,7 @@ const SlotManager = ({ mentorId }) => {
     const [isSaving, setIsSaving] = useState(false);
     const [statusMsg, setStatusMsg] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const timeSlotsRef = React.useRef(null);
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -43,6 +44,13 @@ const SlotManager = ({ mentorId }) => {
             fetchSlots(dateStr);
             setSelectedSlots([]);
             setStatusMsg(null);
+
+            // Auto-scroll to the time slots section
+            setTimeout(() => {
+                if (timeSlotsRef.current) {
+                    timeSlotsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
         }
     }, [selectedDate, fetchSlots]);
 
@@ -142,6 +150,11 @@ const SlotManager = ({ mentorId }) => {
                 setStatusMsg({ type: "success", message: data.message || "Slots saved!" });
                 setSelectedSlots([]);
                 fetchSlots(dateStr);
+
+                // Clear the success message after 3 seconds
+                setTimeout(() => {
+                    setStatusMsg(null);
+                }, 3000);
             } else {
                 setStatusMsg({ type: "error", message: data.message || "Failed to save." });
             }
@@ -159,7 +172,6 @@ const SlotManager = ({ mentorId }) => {
             if (data.success) {
                 const dateStr = formatDate(selectedDate);
                 fetchSlots(dateStr);
-                setStatusMsg({ type: "success", message: "Slot removed." });
             } else {
                 setStatusMsg({ type: "error", message: data.message || "Failed to delete." });
             }
@@ -192,7 +204,7 @@ const SlotManager = ({ mentorId }) => {
 
             {/* Time Slots — shown after date selection */}
             {selectedDate && (
-                <div className="sm-timeslots">
+                <div className="sm-timeslots" ref={timeSlotsRef}>
                     <h4 className="sm-date-label">
                         {selectedDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
                     </h4>
@@ -246,7 +258,7 @@ const SlotManager = ({ mentorId }) => {
                             <div className="sm-actions">
                                 {selectedSlots.length > 0 && (
                                     <button className="sm-save-btn" onClick={handleSaveSlots} disabled={isSaving}>
-                                        {isSaving ? "Saving..." : `Save ${selectedSlots.length} Slot${selectedSlots.length > 1 ? "s" : ""}`}
+                                        {isSaving ? "Saving..." : `Open ${selectedSlots.length} Slot${selectedSlots.length > 1 ? "s" : ""}`}
                                     </button>
                                 )}
 
@@ -260,7 +272,7 @@ const SlotManager = ({ mentorId }) => {
                             {/* Saved slots summary */}
                             {savedSlots.length > 0 && (
                                 <div className="sm-saved-list">
-                                    <h4>Saved Slots for this Date</h4>
+                                    <h4>Open Slots for this Date</h4>
                                     <div className="sm-saved-items">
                                         {savedSlots.map(slot => (
                                             <div key={slot._id} className={`sm-saved-item ${slot.isBooked ? "booked" : ""}`}>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
-import { verifyToken } from '@/lib/auth';
+import { verifyAuth } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
 export async function PUT(req) {
@@ -13,12 +13,12 @@ export async function PUT(req) {
             return NextResponse.json({ success: false, message: 'Not authenticated' }, { status: 401 });
         }
 
-        const decoded = await verifyToken(token);
+        const decoded = await verifyAuth(token);
         if (!decoded) {
             return NextResponse.json({ success: false, message: 'Invalid token' }, { status: 401 });
         }
 
-        const { name, email } = await req.json();
+        const { name, email, photo, phone, qualification, latestQualification, profession, interest, professionalPhoto } = await req.json();
 
         if (!name || !email) {
             return NextResponse.json({ success: false, message: 'Name and email are required' }, { status: 400 });
@@ -32,9 +32,18 @@ export async function PUT(req) {
             return NextResponse.json({ success: false, message: 'Email is already in use' }, { status: 400 });
         }
 
+        const updateData = { name, email };
+        if (photo !== undefined) updateData.photo = photo;
+        if (phone !== undefined) updateData.phone = phone;
+        if (qualification !== undefined) updateData.qualification = qualification;
+        if (latestQualification !== undefined) updateData.latestQualification = latestQualification;
+        if (profession !== undefined) updateData.profession = profession;
+        if (interest !== undefined) updateData.interest = interest;
+        if (professionalPhoto !== undefined) updateData.professionalPhoto = professionalPhoto;
+
         const updatedUser = await User.findByIdAndUpdate(
             decoded.id,
-            { name, email },
+            updateData,
             { new: true, runValidators: true }
         ).lean().select('-password');
 

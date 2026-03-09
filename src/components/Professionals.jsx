@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Professionals.css";
 
 const universities = ["All", "IIM Ahmedabad", "IIM Bangalore", "IIM Calcutta", "ISB Hyderabad", "XLRI Jamshedpur"];
@@ -12,6 +12,7 @@ const Professionals = () => {
     const [selectedUniversity, setSelectedUniversity] = useState("All");
     const [selectedProfession, setSelectedProfession] = useState("All");
     const [selectedProfessor, setSelectedProfessor] = useState(null);
+    const filterRef = useRef(null);
 
     const [currentPage, setCurrentPage] = useState(1);
     const cardsPerPage = 6;
@@ -43,14 +44,18 @@ const Professionals = () => {
         fetchProfessionals();
     }, []);
 
+    // Scroll to filters when page changes
+    useEffect(() => {
+        if (!isLoading && filterRef.current) {
+            filterRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [currentPage, isLoading]);
+
     const handleFilterChange = (setter) => (e) => {
         setter(e.target.value);
         setCurrentPage(1);
     };
 
-    if (isLoading) {
-        return <div className="prof-loading" style={{ textAlign: "center", padding: "100px 0", height: "100vh", color: "var(--text-main)" }}>Loading professionals...</div>;
-    }
 
     return (
         <div className="professionals-page">
@@ -65,7 +70,7 @@ const Professionals = () => {
             </section>
 
             {/* Filter Bar */}
-            <section className="prof-filters">
+            <section className="prof-filters" ref={filterRef}>
                 <div className="filter-group">
                     <label>University</label>
                     <select
@@ -92,7 +97,10 @@ const Professionals = () => {
 
             {/* Professor Grid */}
             <section className="prof-grid">
-                {paginated.length > 0 ? (
+                {isLoading ? (
+                    <div className="prof-no-results">
+                    </div>
+                ) : paginated.length > 0 ? (
                     paginated.map((prof, index) => (
                         <div
                             key={index}

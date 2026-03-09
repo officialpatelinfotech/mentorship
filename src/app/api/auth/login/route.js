@@ -6,16 +6,21 @@ import { signToken } from '@/lib/auth';
 
 export async function POST(req) {
     try {
-        const { email, password } = await req.json();
+        const { identifier, password } = await req.json();
 
-        if (!email || !password) {
-            return NextResponse.json({ success: false, message: 'Please provide email and password' }, { status: 400 });
+        if (!identifier || !password) {
+            return NextResponse.json({ success: false, message: 'Please provide email/phone and password' }, { status: 400 });
         }
 
         await dbConnect();
 
-        // Find user by email, and explicitly select the password field (since it is select: false by default in schema)
-        const user = await User.findOne({ email }).select('+password');
+        // Find user by email OR phone
+        const user = await User.findOne({
+            $or: [
+                { email: identifier },
+                { phone: identifier }
+            ]
+        }).select('+password');
 
         if (!user) {
             return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });

@@ -63,14 +63,22 @@ const Navbar = () => {
                             className="profile-avatar-btn"
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
-                            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                            {user.photo ? (
+                                <img src={user.photo} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                            ) : (
+                                user.name ? user.name.charAt(0).toUpperCase() : 'U'
+                            )}
                         </button>
 
                         {dropdownOpen && (
                             <div className="dropdown-menu">
                                 <div className="dropdown-header">
                                     <div className="dropdown-avatar-large">
-                                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                                        {user.photo ? (
+                                            <img src={user.photo} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                        ) : (
+                                            user.name ? user.name.charAt(0).toUpperCase() : 'U'
+                                        )}
                                     </div>
                                     <div className="dropdown-user-info">
                                         <h4>{user.name}</h4>

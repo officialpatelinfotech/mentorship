@@ -32,7 +32,9 @@ const UserSchema = new mongoose.Schema({
     // Optional: Only relevant if the user is a 'student'
     phone: {
         type: String,
-        default: null
+        default: null,
+        unique: true,
+        sparse: true,
     },
     latestQualification: {
         type: String,
@@ -48,6 +50,14 @@ const UserSchema = new mongoose.Schema({
         default: null
     },
     profession: {
+        type: String,
+        default: null
+    },
+    photo: {
+        type: String,
+        default: null
+    },
+    professionalPhoto: {
         type: String,
         default: null
     }

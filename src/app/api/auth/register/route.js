@@ -6,7 +6,7 @@ import { signToken } from '@/lib/auth';
 
 export async function POST(req) {
     try {
-        const { name, email, password, role, phone, latestQualification, interest, qualification, profession } = await req.json();
+        const { name, email, password, role, phone, latestQualification, interest, qualification, profession, photo, professionalPhoto } = await req.json();
 
         if (!name || !email || !password) {
             return NextResponse.json({ success: false, message: 'Please provide all required fields' }, { status: 400 });
@@ -27,11 +27,21 @@ export async function POST(req) {
         // Limit allowed roles for public registration
         const assignedRole = (role === 'professional') ? 'professional' : 'student';
 
-        // Auto-generate mentorId for professionals
+        // Auto-generate unique mentorId for professionals
         let mentorId = null;
         if (assignedRole === 'professional') {
-            const count = await User.countDocuments({ role: 'professional' });
-            mentorId = `m_${String(count + 1).padStart(3, '0')}`;
+            // Find the highest existing mentor ID number to ensure uniqueness
+            const lastMentor = await User.findOne(
+                { role: 'professional', mentorId: { $ne: null } },
+                { mentorId: 1 },
+                { sort: { mentorId: -1 } }
+            );
+            let nextNum = 1;
+            if (lastMentor && lastMentor.mentorId) {
+                const match = lastMentor.mentorId.match(/m_(\d+)/);
+                if (match) nextNum = parseInt(match[1], 10) + 1;
+            }
+            mentorId = `m_${String(nextNum).padStart(3, '0')}`;
         }
 
         // Create user
@@ -41,6 +51,7 @@ export async function POST(req) {
             password: hashedPassword,
             role: assignedRole,
             mentorId,
+            photo: photo || null,
             // Student-specific fields
             ...(assignedRole === 'student' && {
                 phone: phone || null,
@@ -52,6 +63,7 @@ export async function POST(req) {
                 phone: phone || null,
                 qualification: qualification || null,
                 profession: profession || null,
+                professionalPhoto: professionalPhoto || null,
             }),
         });
 

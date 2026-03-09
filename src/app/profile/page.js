@@ -1,4 +1,5 @@
 import Profile from "@/components/Profile";
+import { Suspense } from "react";
 
 export const metadata = {
     title: "My Profile | MBA Mentorship",
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function Page() {
-    return <Profile />;
+    return (
+        <Suspense fallback={<div className="profile-loading"></div>}>
+            <Profile />
+        </Suspense>
+    );
 }
