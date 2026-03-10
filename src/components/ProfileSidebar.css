@@ -149,12 +149,16 @@
     .profile-sidebar {
         width: 100%;
         min-width: unset;
-        position: static;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+        position: sticky;
+        top: 80px;
+        /* Stay visible below navbar */
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .sidebar-user-brief {
-        padding: 16px;
+        padding: 16px 20px;
+        background: #fff;
     }
 
     .sidebar-nav {
@@ -162,24 +166,34 @@
         overflow-x: auto;
         padding: 0;
         gap: 0;
+        background: #fff;
+        border-top: 1px solid #eee;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Hide scrollbar for cleaner look */
     }
 
-    .sidebar-nav .sidebar-divider {
+    .sidebar-nav::-webkit-scrollbar {
         display: none;
     }
 
     .sidebar-nav-item {
-        flex-direction: column;
-        gap: 4px;
-        padding: 12px 16px;
-        font-size: 0.78rem;
+        flex-direction: row;
+        gap: 8px;
+        padding: 14px 20px;
+        font-size: 0.85rem;
         white-space: nowrap;
         border-bottom: none;
-        border-right: 1px solid #f0f0f0;
+        border-right: 1px solid #f5f5f5;
         justify-content: center;
         align-items: center;
         min-width: fit-content;
+        flex: 1 0 auto;
+    }
+
+    .sidebar-nav-item svg {
+        width: 18px;
+        height: 18px;
     }
 
     .sidebar-nav-item:last-child {
@@ -189,7 +203,7 @@
     .sidebar-nav-item.active {
         border-left: none;
         border-bottom: 3px solid #111;
-        padding-left: 16px;
-        background: #f4f6f8;
+        background: #fcfcfc;
+        color: #111;
     }
 }

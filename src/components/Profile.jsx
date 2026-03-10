@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "./Profile.css";
 import SlotManager from "./SlotManager";
 import ProfileSidebar from "./ProfileSidebar";
+import AdminDashboard from "./AdminDashboard";
 
 const Profile = () => {
     const router = useRouter();
@@ -192,58 +193,64 @@ const Profile = () => {
         </>
     );
 
-    const renderBookings = () => (
-        <div className="profile-bookings">
-            <h3>Your Bookings</h3>
+    const renderBookings = () => {
+        if (user.role === 'admin') {
+            return <AdminDashboard />;
+        }
 
-            {bookings.length === 0 ? (
-                <div className="no-bookings">
-                    <p>You {"don't"} have any bookings yet.</p>
-                    {user.role === 'student' && (
-                        <a href="/professionals" className="profile-cta-btn">Book a Mentor Now</a>
-                    )}
-                </div>
-            ) : (
-                <div className="bookings-grid">
-                    {bookings.map((booking) => {
-                        const isUpcoming = new Date(booking.sessionDate) >= new Date();
-                        return (
-                            <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                <div className="booking-card-header">
-                                    <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                        {isUpcoming ? 'Upcoming' : 'Completed'}
-                                    </span>
-                                    <span className="booking-date">
-                                        {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
-                                </div>
-                                <div className="booking-card-body">
-                                    <h4 className="booking-reason">{booking.sessionReason}</h4>
+        return (
+            <div className="profile-bookings">
+                <h3>Your Bookings</h3>
 
-                                    {user.role === 'student' ? (
-                                        <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
-                                    ) : (
-                                        <div className="booking-person-details">
-                                            <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
-                                            <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
-                                            <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
-                                        </div>
-                                    )}
+                {bookings.length === 0 ? (
+                    <div className="no-bookings">
+                        <p>You {"don't"} have any bookings yet.</p>
+                        {user.role === 'student' && (
+                            <a href="/professionals" className="profile-cta-btn">Book a Mentor Now</a>
+                        )}
+                    </div>
+                ) : (
+                    <div className="bookings-grid">
+                        {bookings.map((booking) => {
+                            const isUpcoming = new Date(booking.sessionDate) >= new Date();
+                            return (
+                                <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                    <div className="booking-card-header">
+                                        <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                            {isUpcoming ? 'Upcoming' : 'Completed'}
+                                        </span>
+                                        <span className="booking-date">
+                                            {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </span>
+                                    </div>
+                                    <div className="booking-card-body">
+                                        <h4 className="booking-reason">{booking.sessionReason}</h4>
 
-                                    <div className="booking-details">
-                                        <div className="detail-item">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                            {booking.sessionTime}
+                                        {user.role === 'student' ? (
+                                            <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
+                                        ) : (
+                                            <div className="booking-person-details">
+                                                <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
+                                                <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
+                                                <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
+                                            </div>
+                                        )}
+
+                                        <div className="booking-details">
+                                            <div className="detail-item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                {booking.sessionTime}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     const renderSlots = () => (
         <div className="profile-bookings">
@@ -263,31 +270,31 @@ const Profile = () => {
                 {isEditing ? (
                     <form onSubmit={handleSaveProfile} className="edit-profile-form">
                         {/* Photo edit */}
-                        {user.role === 'student' && (
-                            <div className="edit-form-group" style={{ alignItems: 'center' }}>
-                                <label>Profile Photo (Passport Size)</label>
-                                <div className="profile-photo-edit">
-                                    {editPhotoPreview ? (
-                                        <>
-                                            <div className="profile-photo-preview">
-                                                <img src={editPhotoPreview} alt="Preview" />
-                                            </div>
-                                            <button type="button" className="photo-change-btn" onClick={() => document.getElementById('edit-photo-input').click()}>Change Photo</button>
-                                        </>
-                                    ) : (
-                                        <button type="button" className="photo-add-btn" onClick={() => document.getElementById('edit-photo-input').click()}>
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                            Upload Photo
-                                        </button>
-                                    )}
-                                    <input type="file" id="edit-photo-input" accept="image/*" onChange={handleEditPhotoChange} style={{ display: 'none' }} />
-                                </div>
+                        {/* Passport Photo edit for all roles */}
+                        <div className="edit-form-group" style={{ alignItems: 'center' }}>
+                            <label>Passport Size Photo</label>
+                            <div className="profile-photo-edit">
+                                {editPhotoPreview ? (
+                                    <>
+                                        <div className="profile-photo-preview">
+                                            <img src={editPhotoPreview} alt="Preview" />
+                                        </div>
+                                        <button type="button" className="photo-change-btn" onClick={() => document.getElementById('edit-photo-input').click()}>Change Photo</button>
+                                    </>
+                                ) : (
+                                    <button type="button" className="photo-add-btn" onClick={() => document.getElementById('edit-photo-input').click()}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                        Upload Photo
+                                    </button>
+                                )}
+                                <input type="file" id="edit-photo-input" accept="image/*" onChange={handleEditPhotoChange} style={{ display: 'none' }} />
                             </div>
-                        )}
+                        </div>
 
+                        {/* Professional Photo edit specifically for mentors */}
                         {user.role === 'professional' && (
                             <div className="edit-form-group" style={{ alignItems: 'center' }}>
-                                <label>Professional Photo</label>
+                                <label>Professional Photo (For Featured Card)</label>
                                 <div className="profile-photo-edit">
                                     {editProfPhotoPreview ? (
                                         <>
@@ -404,14 +411,19 @@ const Profile = () => {
                     </form>
                 ) : (
                     <>
-                        {user.role === 'student' && user.photo && (
+                        {/* Display Passport Photo for all roles */}
+                        {user.photo && (
                             <div className="profile-photo-display">
-                                <img src={user.photo} alt={user.name} />
+                                <p className="photo-label">Passport Size Photo</p>
+                                <img src={user.photo} alt={`${user.name} Passport`} />
                             </div>
                         )}
+
+                        {/* Display Professional Photo specifically for mentors */}
                         {user.role === 'professional' && user.professionalPhoto && (
                             <div className="profile-photo-display">
-                                <img src={user.professionalPhoto} alt={user.name} />
+                                <p className="photo-label">Professional Photo</p>
+                                <img src={user.professionalPhoto} alt={`${user.name} Professional`} />
                             </div>
                         )}
 

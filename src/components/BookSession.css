@@ -3,7 +3,7 @@
     min-height: 100vh;
     background: #f8fafc;
     /* Very light modern gray */
-    padding: 100px 5%;
+    padding: clamp(60px, 12vw, 100px) 5%;
     /* Padding for navbar */
     font-family: inherit;
     color: #111;
@@ -439,6 +439,8 @@
 @media (max-width: 900px) {
     .book-container {
         flex-direction: column;
+        border-radius: 0;
+        box-shadow: none;
     }
 
     .book-left {
@@ -446,11 +448,25 @@
         border-right: none;
         border-bottom: 1px solid #eaeaea;
         padding: 30px 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .mentor-img-wrapper {
         width: 100px;
         height: 100px;
+        margin: 0 auto 20px;
+    }
+
+    .mentor-badges {
+        justify-content: center;
+    }
+
+    .mentor-meta {
+        text-align: left;
+        width: 100%;
     }
 
     .book-right {
@@ -459,6 +475,7 @@
 
     .calendar-time-wrapper {
         flex-direction: column;
+        gap: 20px;
     }
 
     .calendar-container {
@@ -473,17 +490,43 @@
         flex: auto;
         border-left: none;
         padding-left: 0;
-        max-height: 250px;
+        max-height: none;
         border-top: 1px solid #eaeaea;
-        padding-top: 20px;
+        padding-top: 24px;
     }
 
     .slots-list {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
     }
 
     .form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .book-form-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .book-page {
+        padding: 60px 0;
+    }
+
+    .book-left,
+    .book-right {
+        padding: 30px 16px;
+    }
+
+    .cal-day {
+        font-size: 0.85rem;
+    }
+
+    .time-slot {
+        font-size: 0.85rem;
+        padding: 10px;
     }
 }

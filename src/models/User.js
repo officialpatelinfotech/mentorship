@@ -60,6 +60,14 @@ const UserSchema = new mongoose.Schema({
     professionalPhoto: {
         type: String,
         default: null
+    },
+    about: {
+        type: String,
+        default: null
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

@@ -1,10 +1,10 @@
 .profile-page {
     min-height: calc(100vh - 80px);
-    background: #f4f6f8 url('/background-graphic.png');
+    background: #f4f6f8 url('/premium-bg-v2.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    padding: 100px 5% 60px;
+    padding: clamp(60px, 10vw, 100px) 5% 60px;
 }
 
 .profile-loading {
@@ -639,13 +639,15 @@
 
     .profile-layout {
         flex-direction: column;
-        gap: 16px;
+        gap: 20px;
     }
 
     .profile-header {
         flex-direction: column;
         padding: 24px;
-        gap: 16px;
+        gap: 20px;
+        align-items: center;
+        text-align: center;
     }
 
     .profile-info h2 {
@@ -653,16 +655,16 @@
     }
 
     .profile-stats {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .stat-card {
-        padding: 20px 16px;
+        padding: 24px 20px;
     }
 
     .stat-value {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
     }
 
     .profile-bookings {
@@ -671,5 +673,33 @@
 
     .booking-card-body {
         padding: 16px;
+    }
+
+    .edit-profile-form {
+        max-width: 100%;
+    }
+
+    .edit-form-actions {
+        flex-direction: column;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+
+    .profile-photo-preview.professional {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .profile-layout {
+        gap: 20px;
+    }
+
+    .profile-sidebar {
+        width: 220px;
     }
 }

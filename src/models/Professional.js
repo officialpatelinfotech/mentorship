@@ -27,6 +27,14 @@ const ProfessionalSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        about: {
+            type: String,
+            default: null
+        },
+        isFeatured: {
+            type: Boolean,
+            default: false
+        }
     },
     { timestamps: true }
 );

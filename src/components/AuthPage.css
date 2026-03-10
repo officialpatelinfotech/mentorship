@@ -3,11 +3,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f4f6f8 url('/background-graphic.png');
+    background: #f4f6f8 url('/premium-bg-v2.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    padding: 100px 20px 60px;
+    padding: clamp(60px, 12vw, 100px) 20px 60px;
 }
 
 .auth-container {
@@ -433,14 +433,28 @@
 @media (max-width: 480px) {
     .auth-page {
         padding: 80px 16px 40px;
+        align-items: flex-start;
     }
 
     .auth-container {
-        padding: 28px 20px;
+        padding: 32px 24px;
         border-radius: 12px;
+        margin: 0 auto;
     }
 
     .auth-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+    }
+
+    .auth-form {
+        gap: 16px;
+    }
+
+    .photo-upload-label {
+        padding: 12px;
+    }
+
+    .photo-upload-label span {
+        font-size: 0.8rem;
     }
 }

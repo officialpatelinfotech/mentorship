@@ -1,40 +1,62 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Home.css";
 
 const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [featuredMentors, setFeaturedMentors] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const categories = [
+    useEffect(() => {
+        const fetchFeatured = async () => {
+            try {
+                const res = await fetch('/api/public/featured-mentors');
+                const data = await res.json();
+                if (data.success) {
+                    setFeaturedMentors(data.data || []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch featured mentors:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchFeatured();
+    }, []);
+
+    // Fallback categories if no mentors are featured yet
+    const defaultCategories = [
         {
-            title: "MBA Mentorship",
+            _id: '1',
+            name: "MBA Mentorship",
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop",
-            buttonText: "Book a Session",
-            description: "1-on-1 guidance from top B-school alumni to navigate your MBA journey.",
-            details: "Our flagship mentorship program connects you directly with alumni from elite institutions like IIM A, B, C, ISB, and XLRI. Whether you need help selecting schools, refining your narrative, or preparing for interviews, our mentors provide actionable insights tailored to your unique profile."
+            title: "Expert Guidance",
+            about: "1-on-1 guidance from top B-school alumni to navigate your MBA journey."
         },
         {
-            title: "B-School Prep",
+            _id: '2',
+            name: "B-School Prep",
             image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop",
-            buttonText: "Book a Session",
-            description: "Comprehensive preparation strategies for MBA admissions processes.",
-            details: "Gain a competitive edge with our structured B-School preparation. We deconstruct the admissions criteria of top business schools and help you build a compelling application package. This includes resume overhauls, essay reviews (with unlimited iterations), and strategic profile building."
+            title: "Admission Success",
+            about: "Comprehensive preparation strategies for MBA admissions processes."
         },
         {
-            title: "Career Guidance",
+            _id: '3',
+            name: "Career Guidance",
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
-            buttonText: "Book a Session",
-            description: "Expert advice on career transitions, promotions, and industry pivots.",
-            details: "Already have an MBA or looking to transition without one? Our career guidance focuses on your long-term trajectory. We offer specialized coaching for management consulting, product management, investment banking, and general management roles, helping you ace cases and technical interviews."
+            title: "Professional Growth",
+            about: "Expert advice on career transitions, promotions, and industry pivots."
         },
         {
-            title: "Premium Packages",
+            _id: '4',
+            name: "Premium Packages",
             image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop",
-            buttonText: "Book a Session",
-            description: "End-to-end support bundles covering all aspects of your application.",
-            details: "Our premium packages offer the ultimate peace of mind. Experience fully immersive, end-to-end support covering GMAT/CAT strategy, school selection, limitless essay iterations, and multiple mock interview rounds with different mentors to ensure you are ready for any AdCom panel."
+            title: "End-to-End Support",
+            about: "End-to-end support bundles covering all aspects of your application."
         }
     ];
+
+    const displayItems = featuredMentors.length > 0 ? featuredMentors : defaultCategories;
 
     return (
         <div className="home">
@@ -60,28 +82,28 @@ const Home = () => {
             </section>
 
             <section className="featured-grid">
-                {categories.map((cat, index) => (
+                {displayItems.map((item, index) => (
                     <div
-                        key={index}
+                        key={item._id || index}
                         className="grid-item"
-                        style={{ backgroundImage: `url(${cat.image})` }}
+                        style={{ backgroundImage: `url(${item.image})` }}
                     >
                         <div className="overlay">
-                            <h2>{cat.title}</h2>
+                            <h2>{item.name || item.title}</h2>
                             <div className="grid-buttons">
                                 <a
                                     href={`/book-session`}
                                     className="grid-btn grid-btn-primary"
                                     style={{ textDecoration: 'none', display: 'inline-block' }}
                                 >
-                                    {cat.buttonText}
+                                    Book a Session
                                 </a>
                                 <button
                                     className="grid-btn grid-btn-secondary"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        setSelectedCategory(cat);
+                                        setSelectedCategory(item);
                                     }}
                                 >
                                     Know More
@@ -143,18 +165,18 @@ const Home = () => {
                         <button className="home-modal-close" onClick={() => setSelectedCategory(null)}>&times;</button>
                         <div className="home-modal-body">
                             <div className="home-modal-image">
-                                <img src={selectedCategory.image} alt={selectedCategory.title} />
+                                <img src={selectedCategory.image} alt={selectedCategory.name || selectedCategory.title} />
                             </div>
                             <div className="home-modal-text">
-                                <h2>{selectedCategory.title}</h2>
-                                <h3>{selectedCategory.description}</h3>
-                                <p className="home-modal-desc">{selectedCategory.details}</p>
+                                <h2>{selectedCategory.name || selectedCategory.title}</h2>
+                                <h3>{selectedCategory.title || selectedCategory.description}</h3>
+                                <p className="home-modal-desc">{selectedCategory.about || selectedCategory.details}</p>
                                 <a
                                     href="/book-session"
                                     className="home-modal-btn"
                                     style={{ textDecoration: 'none', display: 'inline-block' }}
                                 >
-                                    {selectedCategory.buttonText}
+                                    Book a Session
                                 </a>
                             </div>
                         </div>

@@ -1,0 +1,424 @@
+.admin-dashboard {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+    min-height: auto;
+    font-family: inherit;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 20px;
+}
+
+.admin-header h1 {
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.admin-controls {
+    flex: 1;
+    max-width: 400px;
+}
+
+.admin-search-input {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    outline: none;
+    color: #333;
+}
+
+.admin-search-input:focus {
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-color: #0070f3;
+}
+
+/* Tabs Styling */
+.admin-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-tab {
+    padding: 10px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.admin-tab:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.admin-tab.active {
+    background: #0070f3;
+    color: white;
+    border-color: #0070f3;
+    box-shadow: 0 4px 15px rgba(0, 112, 243, 0.4);
+}
+
+/* Table Card Styling */
+.admin-table-container {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #eee;
+}
+
+.admin-table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tr:hover {
+    background-color: #fcfcfc;
+}
+
+/* Cell Helpers */
+.date-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-text {
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.time-text {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.user-cell,
+.mentor-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-cell strong,
+.mentor-cell strong {
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.user-cell span,
+.mentor-cell small {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Status Badges */
+.admin-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.admin-status-badge.upcoming {
+    background: #e6fffa;
+    color: #047857;
+}
+
+.admin-status-badge.completed {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* Admin Message */
+.admin-message {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.admin-message.success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.admin-message.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+/* Feature Toggle Btn */
+.feature-toggle-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.feature-toggle-btn.add {
+    background: #0070f3;
+    color: white;
+}
+
+.feature-toggle-btn.add:hover {
+    background: #0056b3;
+}
+
+.feature-toggle-btn.remove {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.feature-toggle-btn.remove:hover {
+    background: #fecaca;
+}
+
+.feature-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Detail View Components */
+.back-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #111;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    background: #111;
+    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.back-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.back-btn:hover svg {
+    transform: translateX(-4px);
+}
+
+.admin-stats-summary {
+    margin-bottom: 24px;
+    font-size: 1.1rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px 25px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.view-detail-btn {
+    padding: 8px 18px;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.view-detail-btn:hover {
+    background: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
+}
+
+.empty-row {
+    padding: 60px !important;
+    text-align: center;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+.admin-loading,
+.admin-error {
+    padding: 60px 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin: 20px;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 0;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .admin-header h1 {
+        white-space: normal;
+        font-size: 1.6rem;
+    }
+
+    .admin-controls {
+        max-width: none;
+    }
+
+    .admin-tabs {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 20px;
+    }
+
+    .admin-tab {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .admin-table-container {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .admin-table thead {
+        display: none;
+        /* Hide headers on mobile cards */
+    }
+
+    .admin-table,
+    .admin-table tbody,
+    .admin-table tr,
+    .admin-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-table tr {
+        background: #fff;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eee;
+    }
+
+    .admin-table td {
+        padding: 8px 0;
+        border-bottom: 1px solid #f9f9f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+    }
+
+    .admin-table td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    /* Add labels for mobile cards */
+    .admin-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        text-align: left;
+        color: #666;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    .date-cell,
+    .user-cell,
+    .mentor-cell {
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .admin-status-badge {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+    }
+
+    .view-detail-btn,
+    .feature-toggle-btn {
+        width: 100%;
+        margin-top: 10px;
+        justify-content: center;
+    }
+}

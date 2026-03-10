@@ -19,12 +19,14 @@
 
 /* Calendar — centered, compact */
 .sm-calendar {
-    max-width: 360px;
+    width: 100%;
+    max-width: 400px;
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 20px;
     background: #fafafa;
     margin-bottom: 28px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .sm-cal-header {
@@ -150,9 +152,9 @@
 
 /* Slots grid — compact rows */
 .sm-slots-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
 }
 
 .sm-slot {
@@ -344,6 +346,44 @@
     transition: opacity 0.2s;
 }
 
-.sm-delete-btn:hover {
-    opacity: 0.6;
+@media (max-width: 768px) {
+    .sm-calendar {
+        padding: 16px;
+        margin: 0 auto 24px;
+    }
+
+    .sm-cal-day {
+        font-size: 0.8rem;
+    }
+
+    .sm-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
+    .sm-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .sm-save-btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .sm-status {
+        text-align: center;
+    }
+
+    .sm-saved-items {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .sm-saved-item {
+        justify-content: space-between;
+        padding: 10px 16px;
+    }
 }

@@ -222,16 +222,12 @@
 /* Mobile */
 @media (max-width: 768px) {
     .about-hero {
-        padding: 70px 5% 30px;
-    }
-
-    .about-hero h1 {
-        font-size: 2.4rem;
+        padding: 60px 6% 30px;
     }
 
     .about-split {
         grid-template-columns: 1fr;
-        padding: 20px 5%;
+        padding: 20px 6%;
     }
 
     .about-split-text {
@@ -240,13 +236,13 @@
 
     .about-split-image img {
         min-height: auto;
-        max-height: 300px;
-        object-fit: contain;
+        max-height: 350px;
+        object-fit: cover;
     }
 
     .about-mission {
         grid-template-columns: 1fr;
-        padding: 20px 5%;
+        padding: 40px 6%;
     }
 
     .about-mission-image {
@@ -255,8 +251,8 @@
 
     .about-mission-image img {
         min-height: auto;
-        max-height: 300px;
-        object-fit: contain;
+        max-height: 350px;
+        object-fit: cover;
     }
 
     .about-mission-text {
@@ -264,7 +260,7 @@
     }
 
     .about-cta-content h2 {
-        font-size: 1.8rem;
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
     }
 
     .about-cta-buttons {

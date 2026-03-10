@@ -30,11 +30,11 @@
 }
 
 .prof-hero-content h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
     font-weight: 800;
     color: #fff !important;
     margin: 0 0 18px 0;
-    line-height: 1.05;
+    line-height: 1;
     text-transform: none !important;
     letter-spacing: -0.03em !important;
 }
@@ -121,9 +121,9 @@
 
 .prof-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+    gap: 24px;
+    padding: 24px;
     width: 100%;
     background: #fff;
 }
@@ -417,14 +417,23 @@
 /* ===================== */
 
 @media (max-width: 768px) {
+    .prof-hero {
+        min-height: 70vh;
+    }
+
+    .prof-hero-content {
+        padding: 0 6%;
+    }
+
     .prof-hero-content h1 {
-        font-size: 2.4rem;
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
     }
 
     .prof-filters {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 16px;
-        padding: 24px 5%;
+        padding: 30px 6%;
     }
 
     .filter-group {
@@ -433,26 +442,35 @@
 
     .prof-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 12px;
+        gap: 16px;
+        padding: 16px;
     }
 
     .prof-card {
+        min-height: 380px;
         height: auto;
-        min-height: 320px;
+    }
+
+    .prof-card-overlay {
+        padding: 0 6% 2.5rem;
     }
 
     .prof-card-info h2 {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
     }
 
     .prof-card-buttons {
         opacity: 1;
         transform: translateY(0);
+        margin-top: 10px;
+    }
+
+    .prof-cta-content {
+        padding: 60px 6%;
     }
 
     .prof-cta-content h2 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 
     .prof-cta-buttons {

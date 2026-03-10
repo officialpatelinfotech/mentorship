@@ -43,11 +43,11 @@
 }
 
 .hero h1 {
-    font-size: 4rem;
-    font-weight: 700;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 800;
     margin-bottom: 1.5rem;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
+    letter-spacing: -0.03em;
+    line-height: 1;
     color: #fff;
     text-transform: none;
 }
@@ -106,7 +106,7 @@
 
 .featured-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
     gap: 20px;
     padding: 20px;
     width: 100%;
@@ -206,55 +206,63 @@
 }
 
 @media (max-width: 768px) {
+    .hero {
+        min-height: 70vh;
+    }
+
     .hero-content {
-        padding: 60px 6%;
-    }
-
-    .hero h1 {
-        font-size: 2.2rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .hero p {
-        font-size: 1rem;
-        margin-bottom: 2rem;
+        padding: 40px 6%;
     }
 
     .featured-grid {
         grid-template-columns: 1fr;
+        padding: 10px;
+        gap: 12px;
     }
 
     .grid-item {
-        height: auto;
-        min-height: 280px;
+        min-height: 320px;
+    }
+
+    .grid-item .overlay {
+        padding: 0 6% 2rem;
     }
 
     .grid-item h2 {
-        font-size: 1.6rem;
+        font-size: clamp(1.5rem, 6vw, 2rem);
+        margin-bottom: 1.5rem;
     }
 
-    .feature-image img {
-        height: auto;
-        min-height: 250px;
-        object-fit: contain;
+    .feature-section {
+        padding: 60px 6%;
     }
 
     .story-section {
-        padding: 40px 5%;
+        padding: 40px 6%;
+        grid-template-columns: 1fr;
+    }
+
+    .story-text {
+        padding: 20px 0;
+        order: 2;
     }
 
     .story-image {
-        min-height: auto;
-    }
-
-    .story-image img {
-        height: auto;
-        max-height: 350px;
-        object-fit: contain;
+        order: 1;
+        min-height: 300px;
     }
 
     .cta-content {
-        padding: 50px 6%;
+        padding: 60px 6%;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .cta-btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
