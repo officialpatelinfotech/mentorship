@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import "./AuthPage.css";
+import { compressImage } from "@/lib/imageUtils";
 
 const AuthPage = () => {
     const router = useRouter();
@@ -35,9 +36,9 @@ const AuthPage = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Max 2MB
-        if (file.size > 2 * 1024 * 1024) {
-            setFieldErrors({ ...fieldErrors, photo: "Photo must be less than 2MB" });
+        // Max 15MB
+        if (file.size > 15 * 1024 * 1024) {
+            setFieldErrors({ ...fieldErrors, photo: "Photo must be less than 15MB" });
             return;
         }
 
@@ -47,10 +48,16 @@ const AuthPage = () => {
         }
 
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setFormData((prev) => ({ ...prev, photo: reader.result }));
-            setPhotoPreview(reader.result);
-            setFieldErrors((prev) => ({ ...prev, photo: "" }));
+        reader.onloadend = async () => {
+            try {
+                const compressed = await compressImage(reader.result);
+                setFormData((prev) => ({ ...prev, photo: compressed }));
+                setPhotoPreview(compressed);
+                setFieldErrors((prev) => ({ ...prev, photo: "" }));
+            } catch (err) {
+                console.error("Compression error:", err);
+                setFieldErrors((prev) => ({ ...prev, photo: "Failed to process image" }));
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -58,8 +65,8 @@ const AuthPage = () => {
     const handleProfPhotoChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) {
-            setFieldErrors({ ...fieldErrors, professionalPhoto: "Photo must be less than 2MB" });
+        if (file.size > 15 * 1024 * 1024) {
+            setFieldErrors({ ...fieldErrors, professionalPhoto: "Photo must be less than 15MB" });
             return;
         }
         if (!file.type.startsWith("image/")) {
@@ -67,10 +74,16 @@ const AuthPage = () => {
             return;
         }
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setFormData((prev) => ({ ...prev, professionalPhoto: reader.result }));
-            setProfPhotoPreview(reader.result);
-            setFieldErrors((prev) => ({ ...prev, professionalPhoto: "" }));
+        reader.onloadend = async () => {
+            try {
+                const compressed = await compressImage(reader.result);
+                setFormData((prev) => ({ ...prev, professionalPhoto: compressed }));
+                setProfPhotoPreview(compressed);
+                setFieldErrors((prev) => ({ ...prev, professionalPhoto: "" }));
+            } catch (err) {
+                console.error("Compression error:", err);
+                setFieldErrors((prev) => ({ ...prev, professionalPhoto: "Failed to process image" }));
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -314,7 +327,22 @@ const AuthPage = () => {
                             </div>
                             <div className="form-group">
                                 <label>Profession</label>
-                                <input type="text" name="profession" placeholder="e.g. Management Consultant, Finance Manager" value={formData.profession} onChange={handleInputChange} required />
+                                <select name="profession" value={formData.profession} onChange={handleInputChange} required>
+                                    <option value="" disabled>Select your profession</option>
+                                    <option value="Management Consultant">Management Consultant</option>
+                                    <option value="Investment Banker">Investment Banker</option>
+                                    <option value="Finance Manager">Finance Manager</option>
+                                    <option value="Marketing Manager">Marketing Manager</option>
+                                    <option value="Product Manager">Product Manager</option>
+                                    <option value="Operations Manager">Operations Manager</option>
+                                    <option value="HR Manager">HR Manager</option>
+                                    <option value="Business Analyst">Business Analyst</option>
+                                    <option value="Data Scientist">Data Scientist</option>
+                                    <option value="Strategy Manager">Strategy Manager</option>
+                                    <option value="Entrepreneur / Founder">Entrepreneur / Founder</option>
+                                    <option value="General Manager">General Manager</option>
+                                    <option value="Other">Other</option>
+                                </select>
                                 {fieldErrors.profession && <span className="field-error">{fieldErrors.profession}</span>}
                             </div>
                         </>
@@ -356,7 +384,7 @@ const AuthPage = () => {
                                             <polyline points="21 15 16 10 5 21"></polyline>
                                         </svg>
                                         <span>Click to upload photo</span>
-                                        <small>JPG, PNG — max 2MB</small>
+                                        <small>JPG, PNG — max 15MB</small>
                                     </label>
                                 )}
                                 <input type="file" id="photo-input" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
@@ -388,7 +416,7 @@ const AuthPage = () => {
                                             <polyline points="21 15 16 10 5 21"></polyline>
                                         </svg>
                                         <span>Upload professional photo</span>
-                                        <small>Formal headshot — max 2MB</small>
+                                        <small>Formal headshot — max 15MB</small>
                                     </label>
                                 )}
                                 <input type="file" id="prof-photo-input" accept="image/*" onChange={handleProfPhotoChange} style={{ display: "none" }} />

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Slot from '@/models/Slot';
+import { verifyAuth } from '@/lib/auth';
+import User from '@/models/User';
 
 // GET — Fetch slots for a mentor, optionally filtered by date
 export async function GET(req) {
@@ -33,15 +35,34 @@ export async function GET(req) {
 export async function POST(req) {
     try {
         await dbConnect();
+
+        // Authentication check
+        const token = req.cookies.get('token')?.value;
+        if (!token) {
+            return NextResponse.json({ success: false, message: 'Not authenticated' }, { status: 401 });
+        }
+
+        const decoded = await verifyAuth(token);
+        const user = await User.findById(decoded.id).lean();
+
+        if (!user || user.role !== 'professional' || !user.mentorId) {
+            return NextResponse.json({ success: false, message: 'Unauthorized. Only professionals with a Mentor ID can open slots.' }, { status: 403 });
+        }
+
         const { mentorId, slots } = await req.json();
 
-        if (!mentorId || !slots || !Array.isArray(slots) || slots.length === 0) {
-            return NextResponse.json({ success: false, message: 'mentorId and a non-empty slots array are required' }, { status: 400 });
+        // Safety check: Ensure the mentorId in the body matches the user's mentorId
+        if (mentorId !== user.mentorId) {
+            return NextResponse.json({ success: false, message: 'Unauthorized. You can only manage your own slots.' }, { status: 403 });
+        }
+
+        if (!slots || !Array.isArray(slots) || slots.length === 0) {
+            return NextResponse.json({ success: false, message: 'A non-empty slots array is required' }, { status: 400 });
         }
 
         // Build slot documents, skip duplicates
         const slotDocs = slots.map(s => ({
-            mentorId,
+            mentorId: user.mentorId, // Use fixed mentorId from user account for safety
             date: s.date,
             time: s.time,
             isBooked: false,
@@ -52,7 +73,6 @@ export async function POST(req) {
         try {
             inserted = await Slot.insertMany(slotDocs, { ordered: false });
         } catch (err) {
-            // Duplicate key errors (code 11000) are expected for already-existing slots
             if (err.code === 11000 || err.writeErrors) {
                 inserted = err.insertedDocs || [];
             } else {
@@ -71,6 +91,16 @@ export async function POST(req) {
 export async function DELETE(req) {
     try {
         await dbConnect();
+
+        // Authentication check
+        const token = req.cookies.get('token')?.value;
+        if (!token) {
+            return NextResponse.json({ success: false, message: 'Not authenticated' }, { status: 401 });
+        }
+
+        const decoded = await verifyAuth(token);
+        const user = await User.findById(decoded.id).lean();
+
         const { searchParams } = new URL(req.url);
         const slotId = searchParams.get('id');
 
@@ -82,6 +112,12 @@ export async function DELETE(req) {
         if (!slot) {
             return NextResponse.json({ success: false, message: 'Slot not found' }, { status: 404 });
         }
+
+        // Authorization check: User must be professional AND own this slot (matching mentorId)
+        if (user.role !== 'professional' || slot.mentorId !== user.mentorId) {
+            return NextResponse.json({ success: false, message: 'Unauthorized. You can only delete your own slots.' }, { status: 403 });
+        }
+
         if (slot.isBooked) {
             return NextResponse.json({ success: false, message: 'Cannot delete a booked slot' }, { status: 400 });
         }

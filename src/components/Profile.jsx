@@ -5,6 +5,7 @@ import "./Profile.css";
 import SlotManager from "./SlotManager";
 import ProfileSidebar from "./ProfileSidebar";
 import AdminDashboard from "./AdminDashboard";
+import { compressImage } from "@/lib/imageUtils";
 
 const Profile = () => {
     const router = useRouter();
@@ -98,14 +99,20 @@ const Profile = () => {
     const handleEditProfPhotoChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) {
-            setEditStatus({ type: 'error', message: 'Professional Photo must be less than 2MB' });
+        if (file.size > 15 * 1024 * 1024) {
+            setEditStatus({ type: 'error', message: 'Professional Photo must be less than 15MB' });
             return;
         }
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setEditData(prev => ({ ...prev, professionalPhoto: reader.result }));
-            setEditProfPhotoPreview(reader.result);
+        reader.onloadend = async () => {
+            try {
+                const compressed = await compressImage(reader.result);
+                setEditData(prev => ({ ...prev, professionalPhoto: compressed }));
+                setEditProfPhotoPreview(compressed);
+            } catch (err) {
+                console.error("Compression error:", err);
+                setEditStatus({ type: 'error', message: 'Failed to process image' });
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -113,14 +120,20 @@ const Profile = () => {
     const handleEditPhotoChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) {
-            setEditStatus({ type: 'error', message: 'Photo must be less than 2MB' });
+        if (file.size > 15 * 1024 * 1024) {
+            setEditStatus({ type: 'error', message: 'Photo must be less than 15MB' });
             return;
         }
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setEditData(prev => ({ ...prev, photo: reader.result }));
-            setEditPhotoPreview(reader.result);
+        reader.onloadend = async () => {
+            try {
+                const compressed = await compressImage(reader.result);
+                setEditData(prev => ({ ...prev, photo: compressed }));
+                setEditPhotoPreview(compressed);
+            } catch (err) {
+                console.error("Compression error:", err);
+                setEditStatus({ type: 'error', message: 'Failed to process image' });
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -195,7 +208,7 @@ const Profile = () => {
 
     const renderBookings = () => {
         if (user.role === 'admin') {
-            return <AdminDashboard />;
+            return <AdminDashboard initialTab={activeSection === 'manage-mentors' ? 'manage-mentors' : 'all'} />;
         }
 
         return (
@@ -389,11 +402,26 @@ const Profile = () => {
                                 </div>
                                 <div className="edit-form-group">
                                     <label>Profession</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={editData.profession}
                                         onChange={(e) => setEditData({ ...editData, profession: e.target.value })}
-                                    />
+                                        required
+                                    >
+                                        <option value="" disabled>Select your profession</option>
+                                        <option value="Management Consultant">Management Consultant</option>
+                                        <option value="Investment Banker">Investment Banker</option>
+                                        <option value="Finance Manager">Finance Manager</option>
+                                        <option value="Marketing Manager">Marketing Manager</option>
+                                        <option value="Product Manager">Product Manager</option>
+                                        <option value="Operations Manager">Operations Manager</option>
+                                        <option value="HR Manager">HR Manager</option>
+                                        <option value="Business Analyst">Business Analyst</option>
+                                        <option value="Data Scientist">Data Scientist</option>
+                                        <option value="Strategy Manager">Strategy Manager</option>
+                                        <option value="Entrepreneur / Founder">Entrepreneur / Founder</option>
+                                        <option value="General Manager">General Manager</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                 </div>
                             </>
                         )}
@@ -413,17 +441,23 @@ const Profile = () => {
                     <>
                         {/* Display Passport Photo for all roles */}
                         {user.photo && (
-                            <div className="profile-photo-display">
-                                <p className="photo-label">Passport Size Photo</p>
-                                <img src={user.photo} alt={`${user.name} Passport`} />
+                            <div className="profile-photo-card">
+                                <span className="photo-card-label">Passport Size Photo</span>
+                                <div className="decorative-divider"></div>
+                                <div className="profile-photo-display">
+                                    <img src={user.photo} alt={`${user.name} Passport`} />
+                                </div>
                             </div>
                         )}
 
                         {/* Display Professional Photo specifically for mentors */}
                         {user.role === 'professional' && user.professionalPhoto && (
-                            <div className="profile-photo-display">
-                                <p className="photo-label">Professional Photo</p>
-                                <img src={user.professionalPhoto} alt={`${user.name} Professional`} />
+                            <div className="profile-photo-card professional">
+                                <span className="photo-card-label">Professional Photo</span>
+                                <div className="decorative-divider"></div>
+                                <div className="profile-photo-display">
+                                    <img src={user.professionalPhoto} alt={`${user.name} Professional`} />
+                                </div>
                             </div>
                         )}
 
@@ -512,11 +546,17 @@ const Profile = () => {
     // --- Render Active Section ---
     const renderContent = () => {
         switch (activeSection) {
-            case 'dashboard': return renderDashboard();
-            case 'bookings': return renderBookings();
-            case 'slots': return renderSlots();
-            case 'profile': return renderProfile();
-            default: return renderDashboard();
+            case 'dashboard':
+                return renderDashboard();
+            case 'bookings':
+            case 'manage-mentors':
+                return renderBookings();
+            case 'slots':
+                return renderSlots();
+            case 'profile':
+                return renderProfile();
+            default:
+                return renderDashboard();
         }
     };
 

@@ -10,29 +10,39 @@ export async function GET(req) {
     try {
         await dbConnect();
 
-        const { searchParams } = new URL(req.url);
-        const role = searchParams.get('role');
-        const email = searchParams.get('email');
-        const mentorId = searchParams.get('mentorId'); // If passed explicitly
+        // Get authenticated user from token
+        const token = req.cookies.get('token')?.value;
+        if (!token) {
+            return NextResponse.json({ success: false, message: 'Not authenticated' }, { status: 401 });
+        }
+
+        const decoded = await verifyAuth(token);
+        const user = await User.findById(decoded.id).lean();
+
+        if (!user) {
+            return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+        }
 
         let query = {};
 
-        if (role === 'student' && email) {
-            query = { email: email };
-        } else if (role === 'professional') {
-            // Mentor can be looked up by mentorName or mentorId if passed
-            // In a real app we'd attach mentorId directly to the booked session from the logged in user
-            if (mentorId) {
-                query = { mentorId: mentorId };
-            } else if (email) {
-                // Look up the professional's mentorId from their User account.
-                const user = await User.findOne({ email });
-                if (user && user.mentorId) {
-                    query = { mentorId: user.mentorId };
-                } else {
-                    return NextResponse.json({ success: true, data: [] }, { status: 200 });
-                }
+        if (user.role === 'student') {
+            // Students only see their own bookings mapped by email
+            query = { email: user.email };
+        } else if (user.role === 'professional') {
+            // Professionals only see bookings for their mentorId
+            if (user.mentorId) {
+                query = { mentorId: user.mentorId };
+            } else {
+                // If professional has no mentorId yet, return empty
+                return NextResponse.json({ success: true, data: [] }, { status: 200 });
             }
+        } else if (user.role === 'admin') {
+            // Admins can see all, but they usually use /api/admin/bookings
+            // For safety, let's allow it but we could also restrict it here
+            query = {};
+        } else {
+            // Unknown role should return nothing
+            return NextResponse.json({ success: true, data: [] }, { status: 200 });
         }
 
         const bookings = await Booking.find(query).sort({ sessionDate: 1 }).lean();

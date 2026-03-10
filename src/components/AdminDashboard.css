@@ -77,10 +77,10 @@
 }
 
 .admin-tab.active {
-    background: #0070f3;
-    color: white;
-    border-color: #0070f3;
-    box-shadow: 0 4px 15px rgba(0, 112, 243, 0.4);
+    background: #fff;
+    color: #0070f3;
+    border-color: #fff;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Table Card Styling */

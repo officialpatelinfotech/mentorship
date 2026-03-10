@@ -2,12 +2,16 @@
 import React, { useState, useEffect } from "react";
 import "./AdminDashboard.css";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ initialTab = "all" }) => {
     const [bookings, setBookings] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeTab, setActiveTab] = useState("all"); // "all", "mentors", "candidates", "manage-mentors"
+    const [activeTab, setActiveTab] = useState(initialTab); // "all", "mentors", "candidates", "manage-mentors"
+
+    useEffect(() => {
+        setActiveTab(initialTab);
+    }, [initialTab]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [allMentors, setAllMentors] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -183,32 +187,28 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            <div className="admin-tabs">
-                <button
-                    className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('all')}
-                >
-                    All Bookings
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'mentors' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('mentors')}
-                >
-                    Mentor Stats
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'candidates' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('candidates')}
-                >
-                    Candidate Stats
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'manage-mentors' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('manage-mentors')}
-                >
-                    Manage Mentors
-                </button>
-            </div>
+            {activeTab !== 'manage-mentors' && (
+                <div className="admin-tabs">
+                    <button
+                        className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('all')}
+                    >
+                        All Bookings
+                    </button>
+                    <button
+                        className={`admin-tab ${activeTab === 'mentors' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('mentors')}
+                    >
+                        Mentor Stats
+                    </button>
+                    <button
+                        className={`admin-tab ${activeTab === 'candidates' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('candidates')}
+                    >
+                        Candidate Stats
+                    </button>
+                </div>
+            )}
 
             {message.text && (
                 <div className={`admin-message ${message.type}`}>
