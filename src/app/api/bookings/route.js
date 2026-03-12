@@ -5,6 +5,7 @@ import Slot from '../../../models/Slot';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import Professional from '@/models/Professional';
+import { sendBookingEmails } from '@/lib/mail';
 
 export async function GET(req) {
     try {
@@ -83,6 +84,26 @@ export async function POST(req) {
             { mentorId: body.mentorId, date: body.sessionDate?.split('T')[0], time: body.sessionTime, isBooked: false },
             { isBooked: true }
         );
+
+        // Send Booking Confirmation Emails (Async)
+        try {
+            // Fetch mentor's email from User model
+            const mentorUser = await User.findOne({ mentorId: body.mentorId });
+            
+            if (mentorUser) {
+                await sendBookingEmails({
+                    candidateName: body.name,
+                    candidateEmail: body.email,
+                    mentorName: body.mentorName,
+                    mentorEmail: mentorUser.email,
+                    sessionDate: body.sessionDate?.split('T')[0],
+                    sessionTime: body.sessionTime,
+                    sessionReason: body.sessionFor
+                });
+            }
+        } catch (emailError) {
+            console.error('Failed to send booking emails:', emailError);
+        }
 
         return NextResponse.json(
             { success: true, message: 'Booking successfully saved!', bookingId: newBooking._id },

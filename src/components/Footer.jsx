@@ -6,7 +6,7 @@ const Footer = () => {
         <footer className="footer">
             <div className="footer-main">
                 <div className="footer-brand">
-                    <h2 className="footer-logo">MBA <span>Mentorship</span></h2>
+                    <h2 className="footer-logo"><strong>Dishanta</strong></h2>
                     <p className="footer-tagline">Empowering your MBA journey</p>
 
                     <div className="footer-legal">

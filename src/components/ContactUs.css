@@ -150,6 +150,26 @@
     border-color: #000;
 }
 
+.form-status {
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: -10px;
+}
+
+.form-status.success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.form-status.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
 /* CTA Banner */
 .contact-cta {
     position: relative;

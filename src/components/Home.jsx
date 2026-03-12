@@ -28,7 +28,7 @@ const Home = () => {
     const defaultCategories = [
         {
             _id: '1',
-            name: "MBA Mentorship",
+            name: "Dishanta",
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop",
             title: "Expert Guidance",
             about: "1-on-1 guidance from top B-school alumni to navigate your MBA journey."
@@ -72,7 +72,7 @@ const Home = () => {
                 </video>
                 <div className="hero-content">
                     <h1>
-                        Empowering Your<br />MBA Journey
+                        Empowering Your<br />MBA Journey with <span>Dishanta</span>
                     </h1>
                     <p>Premium mentorship and guidance from industry experts and top B-school alumni.</p>
                     <div className="hero-buttons">
@@ -136,7 +136,7 @@ const Home = () => {
             <section className="story-section">
                 <div className="story-text">
                     <h2>Our Story</h2>
-                    <p>MBA Mentorship was founded by a group of top B-school alumni — professionals with a passion for education, a track record of excellence, and a belief that the right guidance can transform careers. This is the mentorship they wished they had. Now, it&apos;s yours.</p>
+                    <p>Dishanta was founded by a group of top B-school alumni — professionals with a passion for education, a track record of excellence, and a belief that the right guidance can transform careers. This is the mentorship they wished they had. Now, it&apos;s yours.</p>
                     <a href="/about-us" className="story-btn">Learn more</a>
                 </div>
                 <div className="story-image">

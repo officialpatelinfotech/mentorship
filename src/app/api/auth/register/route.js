@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 import { signToken } from '@/lib/auth';
+import { sendSignupEmails } from '@/lib/mail';
 
 export async function POST(req) {
     try {
@@ -90,6 +91,17 @@ export async function POST(req) {
             maxAge: 60 * 60 * 24 * 2, // 2 days
             path: '/',
         });
+        
+        // Send Welcome & Admin Alert Emails (Async)
+        try {
+            await sendSignupEmails({
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role
+            });
+        } catch (emailError) {
+            console.error('Failed to send signup emails:', emailError);
+        }
 
         return response;
 

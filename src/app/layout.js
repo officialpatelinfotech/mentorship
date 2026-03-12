@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "MBA Mentorship",
-  description: "Empowering your MBA journey with expert guidance.",
+  title: "Dishanta",
+  description: "Dishanta - Empowering your MBA journey with expert guidance.",
 };
 
 export const viewport = {

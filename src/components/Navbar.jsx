@@ -48,7 +48,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <a href="/" className="navbar-logo">
-                MBA <span className="logo-dot">Mentorship</span>
+                Dishanta
             </a>
 
             {/* Desktop links */}

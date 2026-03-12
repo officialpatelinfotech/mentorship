@@ -255,6 +255,19 @@ const Profile = () => {
                                                 {booking.sessionTime}
                                             </div>
                                         </div>
+
+                                        {isUpcoming && (
+                                            <div className="booking-actions">
+                                                <a 
+                                                    href={`/session/${booking._id}`} 
+                                                    className="join-session-btn"
+                                                    target="_blank"
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                                    Join Session
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );

@@ -36,9 +36,17 @@ const AboutUs = () => {
                     <h2>This is where passion<br />meets purpose.</h2>
                     <p>Known for being meticulous and deeply invested in each student&apos;s success, our mentors don&apos;t just guide — they champion. Every interaction is designed to push you closer to your goals, whether that&apos;s cracking a top 10 MBA, acing your interviews, or pivoting your career with confidence.</p>
                     <p className="about-signature">
-                        <strong>The MBA Mentorship Team</strong><br />
-                        Founders, MBA Mentorship
+                        <strong>The Dishanta Team</strong><br />
+                        Founders, Dishanta
                     </p>
+                </div>
+            </section>
+
+            {/* New section based on the provided edit */}
+            <section className="about-content">
+                <div className="about-text">
+                    <h2>Our Mission</h2>
+                    <p>At <strong>Dishanta</strong>, we believe that everyone deserves access to top-tier mentorship. Our mission is to bridge the gap between aspiring MBA candidates and successful professionals from the world's leading business schools.</p>
                 </div>
             </section>
 
