@@ -1,17 +1,34 @@
 import nodemailer from 'nodemailer';
+import fs from 'fs';
+import path from 'path';
+
+const APP_NAME = "Dishanta";
+const ADMIN_EMAIL = process.env.CONTACT_EMAIL_RECEIVER;
+
+const logEmail = (data) => {
+    try {
+        const logDir = path.join(process.cwd(), 'logs');
+        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
+        const logPath = path.join(logDir, 'email.log');
+        const entry = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
+        fs.appendFileSync(logPath, entry);
+    } catch (e) {
+        console.error('Logging failed:', e);
+    }
+};
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),
-    secure: true,
+    secure: process.env.SMTP_PORT === '465',
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
+    tls: {
+        rejectUnauthorized: false
+    }
 });
-
-const APP_NAME = "Dishanta";
-const ADMIN_EMAIL = process.env.CONTACT_EMAIL_RECEIVER;
 
 const commonStyles = `
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -52,6 +69,7 @@ export async function sendSignupEmails({ name, email, role }) {
         from: `"${APP_NAME}" <${process.env.SMTP_USER}>`,
         to: email,
         subject: `Welcome to ${APP_NAME}!`,
+        text: `Hello ${name}! Welcome to ${APP_NAME}. We're excited to have you join our mentorship community as a ${role}.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -71,9 +89,10 @@ export async function sendSignupEmails({ name, email, role }) {
 
     // 2. To Admin
     const adminMail = {
-        from: `"${APP_NAME} System" <${process.env.SMTP_USER}>`,
+        from: `"${APP_NAME} Admin" <${process.env.SMTP_USER}>`,
         to: ADMIN_EMAIL,
         subject: `New User Registration: ${name}`,
+        text: `New Signup Alert: ${name} (${email}) registered as ${role}.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -92,17 +111,23 @@ export async function sendSignupEmails({ name, email, role }) {
     // 1. To User (Welcome)
     try {
         console.log(`Sending welcome email to: ${email}`);
-        results.push(await transporter.sendMail(userMail));
+        const info = await transporter.sendMail(userMail);
+        logEmail({ type: 'signup_user', to: email, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send welcome email to ${email}:`, err);
+        logEmail({ type: 'signup_user', to: email, status: 'error', error: err.message });
     }
 
     // 2. To Admin (Signup Alert)
     try {
         console.log(`Sending admin signup alert to: ${ADMIN_EMAIL}`);
-        results.push(await transporter.sendMail(adminMail));
+        const info = await transporter.sendMail(adminMail);
+        logEmail({ type: 'signup_admin', to: ADMIN_EMAIL, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send admin signup alert:`, err);
+        logEmail({ type: 'signup_admin', to: ADMIN_EMAIL, status: 'error', error: err.message });
     }
 
     return results;
@@ -122,6 +147,7 @@ export async function sendBookingEmails({
         from: `"${APP_NAME}" <${process.env.SMTP_USER}>`,
         to: candidateEmail,
         subject: `Booking Confirmed: Session with ${mentorName}`,
+        text: `Hi ${candidateName}, your mentorship session with ${mentorName} is confirmed for ${sessionDate} at ${sessionTime}.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -151,6 +177,7 @@ export async function sendBookingEmails({
         from: `"${APP_NAME}" <${process.env.SMTP_USER}>`,
         to: mentorEmail,
         subject: `New Session Booking: ${candidateName}`,
+        text: `Hello ${mentorName}, you have a new mentorship session scheduled with ${candidateName} on ${sessionDate} at ${sessionTime}.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -177,9 +204,10 @@ export async function sendBookingEmails({
 
     // 3. To Admin
     const adminMail = {
-        from: `"${APP_NAME} System" <${process.env.SMTP_USER}>`,
+        from: `"${APP_NAME} Admin" <${process.env.SMTP_USER}>`,
         to: ADMIN_EMAIL,
         subject: `New Session Scheduled: ${candidateName} & ${mentorName}`,
+        text: `A new session has been booked between ${candidateName} and ${mentorName} for ${sessionDate} at ${sessionTime}.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -198,25 +226,34 @@ export async function sendBookingEmails({
     // 1. To Candidate (Confirmation)
     try {
         console.log(`Sending booking confirmation to Candidate: ${candidateEmail}`);
-        results.push(await transporter.sendMail(candidateMail));
+        const info = await transporter.sendMail(candidateMail);
+        logEmail({ type: 'booking_candidate', to: candidateEmail, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send candidate booking email:`, err);
+        logEmail({ type: 'booking_candidate', to: candidateEmail, status: 'error', error: err.message });
     }
 
     // 2. To Mentor (Alert)
     try {
         console.log(`Sending booking alert to Mentor: ${mentorEmail}`);
-        results.push(await transporter.sendMail(mentorMail));
+        const info = await transporter.sendMail(mentorMail);
+        logEmail({ type: 'booking_mentor', to: mentorEmail, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send mentor booking email:`, err);
+        logEmail({ type: 'booking_mentor', to: mentorEmail, status: 'error', error: err.message });
     }
 
     // 3. To Admin (Platform Alert)
     try {
         console.log(`Sending admin booking alert to: ${ADMIN_EMAIL}`);
-        results.push(await transporter.sendMail(adminMail));
+        const info = await transporter.sendMail(adminMail);
+        logEmail({ type: 'booking_admin', to: ADMIN_EMAIL, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send admin booking alert:`, err);
+        logEmail({ type: 'booking_admin', to: ADMIN_EMAIL, status: 'error', error: err.message });
     }
 
     return results;
@@ -228,10 +265,11 @@ export async function sendBookingEmails({
 export async function sendContactEmails({ name, email, phone, subject, message }) {
     // 1. To Admin
     const adminMail = {
-        from: `"Dishanta Support" <${process.env.SMTP_USER}>`,
+        from: `"${APP_NAME} Support" <${process.env.SMTP_USER}>`,
         replyTo: email,
         to: ADMIN_EMAIL,
         subject: `New Inquiry: ${subject || 'General'}`,
+        text: `New Inquiry from ${name} (${email}): ${message}`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
@@ -250,14 +288,15 @@ export async function sendContactEmails({ name, email, phone, subject, message }
 
     // 2. To User
     const userMail = {
-        from: `"Dishanta" <${process.env.SMTP_USER}>`,
+        from: `"${APP_NAME}" <${process.env.SMTP_USER}>`,
         to: email,
-        subject: `We received your enquiry - Dishanta`,
+        subject: `We received your enquiry - ${APP_NAME}`,
+        text: `Thanks ${name}, we received your inquiry about ${subject || 'General'} and will reach out soon.`,
         html: `
             <div style="${commonStyles}">
                 <div style="${containerStyles}">
                     <div style="${headerStyles}">
-                        <h2 style="margin:0; color:#1a1a1a;">Dishanta</h2>
+                        <h2 style="margin:0; color:#1a1a1a;">${APP_NAME}</h2>
                         <p style="margin:5px 0 0; color:#666; font-size:14px;">Enquiry confirmation</p>
                     </div>
                     <h3>Thanks, ${name}!</h3>
@@ -268,7 +307,7 @@ export async function sendContactEmails({ name, email, phone, subject, message }
                         <p style="margin:5px 0; font-size:15px; color:#333;"><strong>Phone:</strong> ${phone || 'N/A'}</p>
                     </div>
                     <div style="${footerStyles}">
-                        <p>— Dishanta</p>
+                        <p>— ${APP_NAME}</p>
                     </div>
                 </div>
             </div>
@@ -280,17 +319,23 @@ export async function sendContactEmails({ name, email, phone, subject, message }
     // 1. To Admin (Inquiry Alert)
     try {
         console.log(`Sending contact inquiry alert to: ${ADMIN_EMAIL}`);
-        results.push(await transporter.sendMail(adminMail));
+        const info = await transporter.sendMail(adminMail);
+        logEmail({ type: 'contact_admin', to: ADMIN_EMAIL, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send contact admin alert:`, err);
+        logEmail({ type: 'contact_admin', to: ADMIN_EMAIL, status: 'error', error: err.message });
     }
 
     // 2. To User (Receipt Confirmation)
     try {
         console.log(`Sending contact receipt to User: ${email}`);
-        results.push(await transporter.sendMail(userMail));
+        const info = await transporter.sendMail(userMail);
+        logEmail({ type: 'contact_user', to: email, status: 'success', messageId: info.messageId });
+        results.push(info);
     } catch (err) {
         console.error(`Failed to send contact user receipt:`, err);
+        logEmail({ type: 'contact_user', to: email, status: 'error', error: err.message });
     }
 
     return results;
