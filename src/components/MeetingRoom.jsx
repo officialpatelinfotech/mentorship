@@ -10,6 +10,8 @@ import {
   LocalVideoTrack,
   useJoin,
   usePublish,
+  useLocalScreenTrack,
+  useTrackEvent,
 } from 'agora-rtc-react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import './MeetingRoom.css';
@@ -17,11 +19,30 @@ import './MeetingRoom.css';
 const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
   const [micOn, setMic] = useState(true);
   const [cameraOn, setCamera] = useState(true);
+  const [screenShareOn, setScreenShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
 
   // Get local tracks
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  
+  // Screen sharing track
+  const { screenTrack, error: screenError } = useLocalScreenTrack(screenShareOn, {
+    encoderConfig: '1080p_1',
+  }, "disable");
+
+  // Handle screen sharing track ending (e.g., from browser toolbar)
+  useTrackEvent(screenTrack, 'track-ended', () => {
+    setScreenShare(false);
+    setCamera(true); // Turn camera back on when screen share ends
+  });
+
+  // Sync camera and screen share - only one can be active at a time for this simple implementation
+  useEffect(() => {
+    if (screenShareOn) {
+      setCamera(false);
+    }
+  }, [screenShareOn]);
 
   // Join the channel
   useJoin({
@@ -31,7 +52,11 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
   });
 
   // Publish local tracks
-  usePublish([localMicrophoneTrack, localCameraTrack]);
+  // If screen sharing is on, we publish the screen track instead of the camera track
+  usePublish([
+    localMicrophoneTrack, 
+    screenShareOn ? screenTrack : localCameraTrack
+  ]);
 
   // Get remote users
   const remoteUsers = useRemoteUsers();
@@ -64,12 +89,23 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
 
       <div className="video-grid">
         <div className="video-player">
-          {localCameraTrack ? (
+          {screenShareOn && screenTrack ? (
+            <LocalVideoTrack track={screenTrack} play={true} />
+          ) : (localCameraTrack && cameraOn) ? (
             <LocalVideoTrack track={localCameraTrack} play={true} />
           ) : (
-            <div className="no-video">Camera Off</div>
+            <div className="no-video">
+              {screenShareOn && screenError ? (
+                <div className="error-text">Screen sharing failed. Please try again.</div>
+              ) : (
+                "Camera Off"
+              )}
+            </div>
           )}
-          <div className="player-label">You</div>
+          <div className="player-label">{screenShareOn ? 'Your Screen' : 'You'}</div>
+          {screenError && screenShareOn && (
+            <div className="error-overlay">⚠️ Screen Share Error</div>
+          )}
         </div>
 
         {remoteUsers.map((user) => (
@@ -96,10 +132,30 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
         </button>
         <button 
           className={`control-btn ${cameraOn ? 'active' : ''}`} 
-          onClick={() => setCamera(!cameraOn)}
+          onClick={() => {
+            if (!cameraOn && screenShareOn) {
+              setScreenShare(false);
+            }
+            setCamera(!cameraOn);
+          }}
           title={cameraOn ? "Stop Video" : "Start Video"}
         >
           {cameraOn ? '📹' : '🚫'}
+        </button>
+        <button 
+          className={`control-btn ${screenShareOn ? 'active' : ''}`} 
+          onClick={() => {
+            const nextShareState = !screenShareOn;
+            setScreenShare(nextShareState);
+            if (nextShareState) {
+              setCamera(false);
+            } else {
+              setCamera(true);
+            }
+          }}
+          title={screenShareOn ? "Stop Sharing" : "Share Screen"}
+        >
+          {screenShareOn ? '📺' : '📤'}
         </button>
         <button 
           className="control-btn end-call" 
