@@ -784,3 +784,93 @@
 .join-session-btn svg {
     stroke-width: 2.5px;
 }
+
+/* ======================== */
+/* Pagination               */
+/* ======================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}
+
+/* ======================== */
+/* Filters                  */
+/* ======================== */
+
+.bookings-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed #eee;
+}
+
+.filter-input-text {
+    padding: 10px 14px;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: #111;
+    background-color: #fafafa;
+    outline: none;
+    transition: all 0.2s;
+    min-width: 200px;
+    flex: 1 1 200px;
+}
+
+.filter-input-text:focus {
+    border-color: #111;
+    background-color: #fff;
+}
+
+.clear-filters-btn {
+    padding: 10px 16px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.clear-filters-btn:hover {
+    background: #fecaca;
+}

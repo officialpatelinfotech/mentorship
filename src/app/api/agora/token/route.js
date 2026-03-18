@@ -10,7 +10,8 @@ export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url);
         const channelName = searchParams.get('channelName'); // Using bookingId as channel name
-        const uid = 0; // 0 allows Agora to assign a random UID
+        const uidParam = searchParams.get('uid');
+        const uid = uidParam ? parseInt(uidParam, 10) : 0; // 0 allows Agora to assign a random UID, or use the provided integer UID
         const role = RtcRole.PUBLISHER;
 
         if (!channelName) {

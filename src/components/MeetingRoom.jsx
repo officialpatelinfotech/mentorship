@@ -12,19 +12,20 @@ import {
   usePublish,
   useLocalScreenTrack,
   useTrackEvent,
+  useConnectionState
 } from 'agora-rtc-react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import './MeetingRoom.css';
 
-const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
+const MeetingRoomContent = ({ appId, token, channel, uid, onLeave }) => {
   const [micOn, setMic] = useState(true);
   const [cameraOn, setCamera] = useState(true);
   const [screenShareOn, setScreenShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
 
-  // Get local tracks
-  const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
-  const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  // Get local tracks with error handling
+  const { localMicrophoneTrack, error: micError } = useLocalMicrophoneTrack(micOn);
+  const { localCameraTrack, error: camError } = useLocalCameraTrack(cameraOn);
   
   // Screen sharing track
   const { screenTrack, error: screenError } = useLocalScreenTrack(screenShareOn, {
@@ -44,12 +45,16 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
     }
   }, [screenShareOn]);
 
+  const client = useRTCClient();
+  const connectionState = useConnectionState();
+
   // Join the channel
   useJoin({
     appid: appId,
     channel: channel,
     token: token,
-  });
+    uid: uid
+  }, !!token);
 
   // Publish local tracks
   // If screen sharing is on, we publish the screen track instead of the camera track
@@ -58,8 +63,19 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
     screenShareOn ? screenTrack : localCameraTrack
   ]);
 
+
+
   // Get remote users
   const remoteUsers = useRemoteUsers();
+
+  useEffect(() => {
+    console.log('--- MeetingRoom Debug ---');
+    console.log('AppID:', appId);
+    console.log('Channel:', channel);
+    console.log('Local UID:', uid);
+    console.log('Remote Users:', remoteUsers.map(u => u.uid));
+    console.log('-------------------------');
+  }, [appId, channel, uid, remoteUsers]);
 
   // Timer logic for 15-minute session
   useEffect(() => {
@@ -116,8 +132,18 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
         ))}
 
         {remoteUsers.length === 0 && (
-          <div className="video-player waiting">
+          <div className="video-player waiting" style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '300px' }}>
             <div className="status-message">Waiting for your partner to join...</div>
+            <div style={{ marginTop: '20px', fontSize: '11px', color: '#aaa', backgroundColor: '#222', padding: '10px', borderRadius: '4px', textAlign: 'left', width: '80%' }}>
+               <p><strong>Connection Diagnostics:</strong></p>
+               <p>State: <span style={{ color: connectionState === 'CONNECTED' ? '#4ade80' : '#f87171' }}>{connectionState}</span></p>
+               <p>Channel: {channel}</p>
+               <p>Your UID: {uid}</p>
+               <p>Local Mic: {localMicrophoneTrack ? 'Ready' : (micError ? 'Error: ' + micError.message : 'Loading')}</p>
+               <p>Local Cam: {localCameraTrack ? 'Ready' : (camError ? 'Error: ' + camError.message : 'Loading')}</p>
+               <p>Remote Users Count: {remoteUsers.length}</p>
+               <p>Client Internal Users: {client.remoteUsers.length}</p>
+            </div>
           </div>
         )}
       </div>
@@ -169,13 +195,13 @@ const MeetingRoomContent = ({ appId, token, channel, onLeave }) => {
   );
 };
 
-const MeetingRoom = ({ appId, token, channel, onLeave }) => {
+const MeetingRoom = ({ appId, token, channel, uid, onLeave }) => {
   // Initialize Agora Client
   const client = useRTCClient(AgoraRTC.createClient({ codec: 'vp8', mode: 'rtc' }));
 
   return (
     <AgoraRTCProvider client={client}>
-      <MeetingRoomContent appId={appId} token={token} channel={channel} onLeave={onLeave} />
+      <MeetingRoomContent appId={appId} token={token} channel={channel} uid={uid} onLeave={onLeave} />
     </AgoraRTCProvider>
   );
 };

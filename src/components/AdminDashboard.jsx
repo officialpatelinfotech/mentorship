@@ -7,7 +7,45 @@ const AdminDashboard = ({ initialTab = "all" }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [filterRole, setFilterRole] = useState('all');
+    const [filterFeatured, setFilterFeatured] = useState('all');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterReason, setFilterReason] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('all');
     const [activeTab, setActiveTab] = useState(initialTab); // "all", "mentors", "candidates", "manage-mentors"
+    const [currentPage, setCurrentPage] = useState(1);
+    const [mentorsPage, setMentorsPage] = useState(1);
+    const [bookingsSort, setBookingsSort] = useState({ key: 'sessionDate', direction: 'desc' });
+    const [mentorsSort, setMentorsSort] = useState({ key: 'name', direction: 'asc' });
+    const ITEMS_PER_PAGE = 10;
+
+    const handleSort = (key, sortState, setSortState) => {
+        let direction = 'asc';
+        if (sortState.key === key && sortState.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortState({ key, direction });
+    };
+
+    const sortData = (data, sortConfig) => {
+        if (!sortConfig.key) return data;
+        return [...data].sort((a, b) => {
+            const aVal = a[sortConfig.key];
+            const bVal = b[sortConfig.key];
+            // Handling nullish values for robust sorting
+            if (aVal == null && bVal != null) return 1;
+            if (aVal != null && bVal == null) return -1;
+            if (aVal == null && bVal == null) return 0;
+            if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    };
+
+    const renderSortIcon = (key, sortState) => {
+        if (sortState.key !== key) return <span className="sort-icon"></span>;
+        return <span className={`sort-icon ${sortState.direction}`}></span>;
+    };
 
     useEffect(() => {
         setActiveTab(initialTab);
@@ -111,11 +149,56 @@ const AdminDashboard = ({ initialTab = "all" }) => {
         });
     };
 
-    const filteredBookings = bookings.filter(booking =>
-        booking.candidateName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.mentorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const uniqueReasons = [...new Set(bookings.map(b => b.sessionReason).filter(Boolean))];
+
+    const filteredBookings = bookings.filter(booking => {
+        const matchesSearch = 
+            booking.candidateName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking.mentorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const bookingDate = new Date(booking.sessionDate).toISOString().split('T')[0];
+        const matchesDate = !filterDate || bookingDate === filterDate;
+        
+        const matchesReason = filterReason === 'all' || booking.sessionReason === filterReason;
+        
+        const isUpcoming = new Date(booking.sessionDate) > new Date();
+        const status = isUpcoming ? 'upcoming' : 'completed';
+        const matchesStatus = filterStatus === 'all' || status === filterStatus;
+
+        return matchesSearch && matchesDate && matchesReason && matchesStatus;
+    });
+
+    const indexOfLastBooking = currentPage * ITEMS_PER_PAGE;
+    const indexOfFirstBooking = indexOfLastBooking - ITEMS_PER_PAGE;
+    const sortedBookings = sortData(filteredBookings, bookingsSort);
+    const currentBookings = sortedBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+    const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const uniqueRoles = [...new Set(allMentors.map(m => m.title).filter(Boolean))];
+
+    const filteredMentors = allMentors.filter(m => {
+        const matchesSearch = 
+            m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            m.title?.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesRole = filterRole === 'all' || m.title === filterRole;
+        
+        const matchesFeatured = filterFeatured === 'all' || 
+                               (filterFeatured === 'featured' && m.featured) || 
+                               (filterFeatured === 'not-featured' && !m.featured);
+                               
+        return matchesSearch && matchesRole && matchesFeatured;
+    });
+    const indexOfLastMentor = mentorsPage * ITEMS_PER_PAGE;
+    const indexOfFirstMentor = indexOfLastMentor - ITEMS_PER_PAGE;
+    const totalMentorPages = Math.ceil(filteredMentors.length / ITEMS_PER_PAGE);
+    const paginateMentors = (pageNumber) => setMentorsPage(pageNumber);
+
+    const sortedMentors = sortData(filteredMentors, mentorsSort);
+    const currentMentors = sortedMentors.slice(indexOfFirstMentor, indexOfLastMentor);
 
     if (isLoading) return <div className="admin-loading">Loading Admin Dashboard...</div>;
     if (error) return <div className="admin-error">Error: {error}</div>;
@@ -175,40 +258,74 @@ const AdminDashboard = ({ initialTab = "all" }) => {
 
     return (
         <div className="admin-dashboard">
-            <div className="admin-header">
-                <div className="admin-controls">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="admin-search-input"
-                    />
+            <div className="admin-main-header">
+                <h1 className="admin-main-title">{activeTab === 'manage-mentors' ? 'Manage Mentors' : 'All Bookings'}</h1>
+                <div className="admin-controls-wrapper">
+                    <div className="admin-controls">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchTerm}
+                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); setMentorsPage(1); }}
+                            className="admin-search-input"
+                        />
+                    </div>
+                    {activeTab !== 'manage-mentors' && (
+                        <div className="admin-filters">
+                            <input 
+                                type="date" 
+                                value={filterDate} 
+                                onChange={(e) => { setFilterDate(e.target.value); setCurrentPage(1); }}
+                                className="admin-filter-select"
+                            />
+                            <select 
+                                value={filterReason} 
+                                onChange={(e) => { setFilterReason(e.target.value); setCurrentPage(1); }}
+                                className="admin-filter-select"
+                            >
+                                <option value="all">All Reasons</option>
+                                {uniqueReasons.map(reason => (
+                                    <option key={reason} value={reason}>{reason}</option>
+                                ))}
+                            </select>
+                            <select 
+                                value={filterStatus} 
+                                onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
+                                className="admin-filter-select"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    )}
+                    {activeTab === 'manage-mentors' && (
+                        <div className="admin-filters">
+                            <select 
+                                value={filterRole} 
+                                onChange={(e) => { setFilterRole(e.target.value); setMentorsPage(1); }}
+                                className="admin-filter-select"
+                            >
+                                <option value="all">All Roles</option>
+                                {uniqueRoles.map(role => (
+                                    <option key={role} value={role}>{role}</option>
+                                ))}
+                            </select>
+                            <select 
+                                value={filterFeatured} 
+                                onChange={(e) => { setFilterFeatured(e.target.value); setMentorsPage(1); }}
+                                className="admin-filter-select"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="featured">Featured Only</option>
+                                <option value="not-featured">Not Featured</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {activeTab !== 'manage-mentors' && (
-                <div className="admin-tabs">
-                    <button
-                        className={`admin-tab ${activeTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('all')}
-                    >
-                        All Bookings
-                    </button>
-                    <button
-                        className={`admin-tab ${activeTab === 'mentors' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('mentors')}
-                    >
-                        Mentor Stats
-                    </button>
-                    <button
-                        className={`admin-tab ${activeTab === 'candidates' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('candidates')}
-                    >
-                        Candidate Stats
-                    </button>
-                </div>
-            )}
+
 
             {message.text && (
                 <div className={`admin-message ${message.type}`}>
@@ -216,25 +333,25 @@ const AdminDashboard = ({ initialTab = "all" }) => {
                 </div>
             )}
 
-            {activeTab === 'all' && (
+            {activeTab !== 'manage-mentors' && (
                 <div className="admin-table-container">
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>Date & Time</th>
-                                <th>Student</th>
-                                <th>Mentor</th>
-                                <th>Reason</th>
+                                <th className="sortable-th" onClick={() => handleSort('sessionDate', bookingsSort, setBookingsSort)}>Date &amp; Time {renderSortIcon('sessionDate', bookingsSort)}</th>
+                                <th className="sortable-th" onClick={() => handleSort('candidateName', bookingsSort, setBookingsSort)}>Student {renderSortIcon('candidateName', bookingsSort)}</th>
+                                <th className="sortable-th" onClick={() => handleSort('mentorName', bookingsSort, setBookingsSort)}>Mentor {renderSortIcon('mentorName', bookingsSort)}</th>
+                                <th className="sortable-th" onClick={() => handleSort('sessionReason', bookingsSort, setBookingsSort)}>Reason {renderSortIcon('sessionReason', bookingsSort)}</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredBookings.length > 0 ? (
-                                filteredBookings.map((booking) => {
+                            {currentBookings.length > 0 ? (
+                                currentBookings.map((booking) => {
                                     const isUpcoming = new Date(booking.sessionDate) >= new Date();
                                     return (
                                         <tr key={booking._id} className={isUpcoming ? 'row-upcoming' : 'row-past'}>
-                                            <td data-label="Date & Time">
+                                            <td data-label="Date &amp; Time">
                                                 <div className="date-cell">
                                                     <span className="date-text">{new Date(booking.sessionDate).toLocaleDateString()}</span>
                                                     <span className="time-text">{booking.sessionTime}</span>
@@ -268,79 +385,42 @@ const AdminDashboard = ({ initialTab = "all" }) => {
                     </table>
                 </div>
             )}
-
-            {activeTab === 'mentors' && (
-                <div className="admin-table-container">
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Mentor Name</th>
-                                <th>Mentor ID</th>
-                                <th>Total Sessions</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mentorStats.map(stat => (
-                                <tr key={stat.mentorId}>
-                                    <td><strong>{stat.mentorName}</strong></td>
-                                    <td>{stat.mentorId}</td>
-                                    <td>{stat.count}</td>
-                                    <td>
-                                        <button className="view-detail-btn" onClick={() => handleMentorClick(stat.mentorId)}>
-                                            View Sessions
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            
+            {activeTab !== 'manage-mentors' && filteredBookings.length > 0 && (
+                <div className="pagination">
+                    <button 
+                        onClick={() => paginate(currentPage - 1)} 
+                        disabled={currentPage === 1}
+                        className="pagination-btn"
+                    >
+                        Previous
+                    </button>
+                    <span className="pagination-info">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button 
+                        onClick={() => paginate(currentPage + 1)} 
+                        disabled={currentPage === totalPages}
+                        className="pagination-btn"
+                    >
+                        Next
+                    </button>
                 </div>
             )}
 
-            {activeTab === 'candidates' && (
-                <div className="admin-table-container">
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Candidate Name</th>
-                                <th>Email</th>
-                                <th>Qualification</th>
-                                <th>Total Sessions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {candidateStats.map(stat => (
-                                <tr key={stat.email}>
-                                    <td data-label="Candidate"><strong>{stat.candidateName}</strong></td>
-                                    <td data-label="Email">{stat.email}</td>
-                                    <td data-label="Qualification">{stat.qualification}</td>
-                                    <td data-label="Sessions">{stat.count}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
             {activeTab === 'manage-mentors' && (
                 <div className="admin-table-container">
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>Mentor</th>
-                                <th>Role/Title</th>
+                                <th className="sortable-th" onClick={() => handleSort('name', mentorsSort, setMentorsSort)}>Mentor {renderSortIcon('name', mentorsSort)}</th>
+                                <th className="sortable-th" onClick={() => handleSort('title', mentorsSort, setMentorsSort)}>Role/Title {renderSortIcon('title', mentorsSort)}</th>
                                 <th>Featured</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {allMentors
-                                .filter(m =>
-                                    m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    m.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    m.title?.toLowerCase().includes(searchTerm.toLowerCase())
-                                )
-                                .map(mentor => {
+                            {currentMentors.map(mentor => {
                                     const isSeeded = !mentor.email;
                                     return (
                                         <tr key={mentor._id}>
@@ -368,13 +448,35 @@ const AdminDashboard = ({ initialTab = "all" }) => {
                                         </tr>
                                     );
                                 })}
-                            {allMentors.length === 0 && (
+                            {filteredMentors.length === 0 && (
                                 <tr>
                                     <td colSpan="4" className="empty-row">No mentors found.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
+                </div>
+            )}
+            
+            {activeTab === 'manage-mentors' && filteredMentors.length > 0 && (
+                <div className="pagination">
+                    <button 
+                        onClick={() => paginateMentors(mentorsPage - 1)} 
+                        disabled={mentorsPage === 1}
+                        className="pagination-btn"
+                    >
+                        Previous
+                    </button>
+                    <span className="pagination-info">
+                        Page {mentorsPage} of {totalMentorPages}
+                    </span>
+                    <button 
+                        onClick={() => paginateMentors(mentorsPage + 1)} 
+                        disabled={mentorsPage === totalMentorPages}
+                        className="pagination-btn"
+                    >
+                        Next
+                    </button>
                 </div>
             )}
         </div>

@@ -5,6 +5,7 @@ import "./Profile.css";
 import SlotManager from "./SlotManager";
 import ProfileSidebar from "./ProfileSidebar";
 import AdminDashboard from "./AdminDashboard";
+import AdminAnalytics from "./AdminAnalytics";
 import { compressImage } from "@/lib/imageUtils";
 
 const Profile = () => {
@@ -20,8 +21,18 @@ const Profile = () => {
     const [editPhotoPreview, setEditPhotoPreview] = useState(null);
     const [editProfPhotoPreview, setEditProfPhotoPreview] = useState(null);
     const [editStatus, setEditStatus] = useState({ type: '', message: '' });
-    const [isSaving, setIsSaving] = useState(false);
     const [activeSection, setActiveSection] = useState(tabParam || 'dashboard');
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Pagination state for bookings
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
+
+    // Filter states for bookings
+    const [filterName, setFilterName] = useState('');
+    const [filterEmail, setFilterEmail] = useState('');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterTime, setFilterTime] = useState('');
 
     // Update URL when section changes
     useEffect(() => {
@@ -30,6 +41,12 @@ const Profile = () => {
         } else {
             router.replace(`/profile`, { scroll: false });
         }
+        // Reset pagination and filters when switching tabs
+        setCurrentPage(1);
+        setFilterName('');
+        setFilterEmail('');
+        setFilterDate('');
+        setFilterTime('');
     }, [activeSection, router]);
 
     useEffect(() => {
@@ -199,7 +216,10 @@ const Profile = () => {
                 <div className="stat-card">
                     <h3>Upcoming</h3>
                     <p className="stat-value">
-                        {bookings.filter(b => new Date(b.sessionDate) >= new Date()).length}
+                        {bookings.filter(b => {
+                            const bookingDateTimeString = `${b.sessionDate?.split('T')[0]} ${b.sessionTime}`;
+                            return new Date(bookingDateTimeString) >= new Date();
+                        }).length}
                     </p>
                 </div>
             </div>
@@ -210,6 +230,31 @@ const Profile = () => {
         if (user.role === 'admin') {
             return <AdminDashboard initialTab={activeSection === 'manage-mentors' ? 'manage-mentors' : 'all'} />;
         }
+
+        // Apply Filters
+        const filteredBookings = bookings.filter((booking) => {
+            const matchName = user.role === 'student' 
+                ? booking.mentorName?.toLowerCase().includes(filterName.toLowerCase())
+                : booking.candidateName?.toLowerCase().includes(filterName.toLowerCase());
+            
+            const matchEmail = booking.email?.toLowerCase().includes(filterEmail.toLowerCase());
+            const matchDate = filterDate ? booking.sessionDate?.startsWith(filterDate) : true;
+            const matchTime = filterTime ? booking.sessionTime?.includes(filterTime) : true;
+
+            return (!filterName || matchName) && (!filterEmail || matchEmail) && matchDate && matchTime;
+        });
+
+        // Pagination calculations on filtered list
+        const indexOfLastBooking = currentPage * ITEMS_PER_PAGE;
+        const indexOfFirstBooking = indexOfLastBooking - ITEMS_PER_PAGE;
+        const currentBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+        const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+
+        // Get unique options for filters
+        const uniqueNames = [...new Set(bookings.map(b => user.role === 'student' ? b.mentorName : b.candidateName).filter(Boolean))].sort();
+        const uniqueEmails = [...new Set(bookings.map(b => b.email).filter(Boolean))].sort();
+        const uniqueDates = [...new Set(bookings.map(b => b.sessionDate?.split('T')[0]).filter(Boolean))].sort((a, b) => new Date(b) - new Date(a));
+        const uniqueTimes = [...new Set(bookings.map(b => b.sessionTime).filter(Boolean))].sort();
 
         return (
             <div className="profile-bookings">
@@ -223,56 +268,147 @@ const Profile = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="bookings-grid">
-                        {bookings.map((booking) => {
-                            const isUpcoming = new Date(booking.sessionDate) >= new Date();
-                            return (
-                                <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                    <div className="booking-card-header">
-                                        <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                            {isUpcoming ? 'Upcoming' : 'Completed'}
-                                        </span>
-                                        <span className="booking-date">
-                                            {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                    <div className="booking-card-body">
-                                        <h4 className="booking-reason">{booking.sessionReason}</h4>
+                    <>
+                        {/* Filters UI */}
+                        <div className="bookings-filters">
+                            <input 
+                                type="text"
+                                list="name-options"
+                                placeholder={user.role === 'student' ? "Filter by Mentor Name" : "Filter by Candidate Name"}
+                                value={filterName}
+                                onChange={(e) => { setFilterName(e.target.value); setCurrentPage(1); }}
+                                className="filter-input-text"
+                            />
+                            <datalist id="name-options">
+                                {uniqueNames.map(name => (
+                                    <option key={name} value={name} />
+                                ))}
+                            </datalist>
 
-                                        {user.role === 'student' ? (
-                                            <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
-                                        ) : (
-                                            <div className="booking-person-details">
-                                                <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
-                                                <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
-                                                <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
-                                            </div>
-                                        )}
+                            {user.role === 'professional' && (
+                                <>
+                                    <input 
+                                        type="text"
+                                        list="email-options"
+                                        placeholder="Filter by Email"
+                                        value={filterEmail}
+                                        onChange={(e) => { setFilterEmail(e.target.value); setCurrentPage(1); }}
+                                        className="filter-input-text"
+                                    />
+                                    <datalist id="email-options">
+                                        {uniqueEmails.map(email => (
+                                            <option key={email} value={email} />
+                                        ))}
+                                    </datalist>
+                                </>
+                            )}
 
-                                        <div className="booking-details">
-                                            <div className="detail-item">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                                {booking.sessionTime}
-                                            </div>
+                            <input 
+                                type="date"
+                                value={filterDate}
+                                onChange={(e) => { setFilterDate(e.target.value); setCurrentPage(1); }}
+                                className="filter-input-text"
+                            />
+
+                            <input 
+                                type="text"
+                                list="time-options"
+                                placeholder="Filter by Slot (e.g. 10:00 AM)"
+                                value={filterTime}
+                                onChange={(e) => { setFilterTime(e.target.value); setCurrentPage(1); }}
+                                className="filter-input-text"
+                            />
+                            <datalist id="time-options">
+                                {uniqueTimes.map(time => (
+                                    <option key={time} value={time} />
+                                ))}
+                            </datalist>
+
+                            {(filterName || filterEmail || filterDate || filterTime) && (
+                                <button className="clear-filters-btn" onClick={() => {
+                                    setFilterName(''); setFilterEmail(''); setFilterDate(''); setFilterTime(''); setCurrentPage(1);
+                                }}>Clear</button>
+                            )}
+                        </div>
+
+                        {filteredBookings.length === 0 ? (
+                            <div className="no-bookings"><p>No bookings match your filters.</p></div>
+                        ) : (
+                            <div className="bookings-grid">
+                                {currentBookings.map((booking) => {
+                                // Combine sessionDate and sessionTime for accurate comparison
+                                const bookingDateTimeString = `${booking.sessionDate.split('T')[0]} ${booking.sessionTime}`;
+                                const isUpcoming = new Date(bookingDateTimeString) >= new Date();
+                                return (
+                                    <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                        <div className="booking-card-header">
+                                            <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                                {isUpcoming ? 'Upcoming' : 'Completed'}
+                                            </span>
+                                            <span className="booking-date">
+                                                {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </span>
                                         </div>
+                                        <div className="booking-card-body">
+                                            <h4 className="booking-reason">{booking.sessionReason}</h4>
 
-                                        {isUpcoming && (
-                                            <div className="booking-actions">
-                                                <a 
-                                                    href={`/session/${booking._id}`} 
-                                                    className="join-session-btn"
-                                                    target="_blank"
-                                                >
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                                                    Join Session
-                                                </a>
+                                            {user.role === 'student' ? (
+                                                <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
+                                            ) : (
+                                                <div className="booking-person-details">
+                                                    <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
+                                                    <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
+                                                    <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
+                                                </div>
+                                            )}
+
+                                            <div className="booking-details">
+                                                <div className="detail-item">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                    {booking.sessionTime}
+                                                </div>
                                             </div>
-                                        )}
+
+                                            {isUpcoming && (
+                                                <div className="booking-actions">
+                                                    <a 
+                                                        href={`/session/${booking._id}`} 
+                                                        className="join-session-btn"
+                                                        target="_blank"
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                                        Join Session
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
+                        )}
+                        {filteredBookings.length > 0 && (
+                            <div className="pagination">
+                                <button 
+                                    onClick={() => paginate(currentPage - 1)} 
+                                    disabled={currentPage === 1}
+                                    className="pagination-btn"
+                                >
+                                    Previous
+                                </button>
+                                <span className="pagination-info">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button 
+                                    onClick={() => paginate(currentPage + 1)} 
+                                    disabled={currentPage === totalPages}
+                                    className="pagination-btn"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         );
@@ -564,6 +700,8 @@ const Profile = () => {
             case 'bookings':
             case 'manage-mentors':
                 return renderBookings();
+            case 'analytics':
+                return <AdminAnalytics />;
             case 'slots':
                 return renderSlots();
             case 'profile':

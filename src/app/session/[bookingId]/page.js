@@ -14,10 +14,10 @@ export default function SessionPage({ params }) {
     const router = useRouter();
 
     useEffect(() => {
-        const fetchToken = async () => {
+        const fetchToken = async (uid) => {
             try {
-                // Fetch token from our API
-                const res = await fetch(`/api/agora/token?channelName=${bookingId}`);
+                // Fetch token from our API, include the generated uid
+                const res = await fetch(`/api/agora/token?channelName=${bookingId}&uid=${uid}`);
                 
                 // If the response is not 200, it's likely an auth or config issue
                 if (!res.ok) {
@@ -28,7 +28,7 @@ export default function SessionPage({ params }) {
                 const data = await res.json();
                 
                 if (data.success) {
-                    setAgoraData(data);
+                    setAgoraData({ ...data, uid });
                 } else {
                     throw new Error(data.message || 'Failed to join session');
                 }
@@ -41,7 +41,9 @@ export default function SessionPage({ params }) {
         };
 
         if (bookingId) {
-            fetchToken();
+            // Generate a random UID between 1 and 1000000 to prevent collisions
+            const randomUid = Math.floor(Math.random() * 1000000) + 1;
+            fetchToken(randomUid);
         }
     }, [bookingId]);
 
@@ -109,6 +111,7 @@ export default function SessionPage({ params }) {
             appId={agoraData.appId} 
             token={agoraData.token} 
             channel={agoraData.channelName} 
+            uid={agoraData.uid}
             onLeave={handleLeave} 
         />
     );

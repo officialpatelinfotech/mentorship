@@ -17,6 +17,12 @@
     z-index: 10;
 }
 
+.meeting-header h2 {
+    color: #ffffff;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
 .timer-badge {
     background: #ff4757;
     padding: 5px 15px;

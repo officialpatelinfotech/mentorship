@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import User from '@/models/User';
 import Professional from '@/models/Professional';
 import { sendBookingEmails } from '@/lib/mail';
+import { verifyAuth } from '@/lib/auth';
 
 export async function GET(req) {
     try {
@@ -46,7 +47,7 @@ export async function GET(req) {
             return NextResponse.json({ success: true, data: [] }, { status: 200 });
         }
 
-        const bookings = await Booking.find(query).sort({ sessionDate: 1 }).lean();
+        const bookings = await Booking.find(query).sort({ sessionDate: -1, sessionTime: -1 }).lean();
         const safeBookings = bookings.map(b => ({ ...b, _id: b._id.toString() }));
 
         return NextResponse.json({ success: true, data: safeBookings }, { status: 200 });
