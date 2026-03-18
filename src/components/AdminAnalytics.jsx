@@ -11,6 +11,8 @@ const AdminAnalytics = () => {
     const [candidatesPage, setCandidatesPage] = useState(1);
     const [mentorStatsSort, setMentorStatsSort] = useState({ key: 'name', direction: 'asc' });
     const [candidateStatsSort, setCandidateStatsSort] = useState({ key: 'name', direction: 'asc' });
+    const [mentorSearch, setMentorSearch] = useState("");
+    const [candidateSearch, setCandidateSearch] = useState("");
     const ITEMS_PER_PAGE = 10;
 
     const handleSort = (key, sortState, setSortState) => {
@@ -75,6 +77,7 @@ const AdminAnalytics = () => {
 
     const mentorStats = Object.entries(mentorCounts)
         .map(([id, stat]) => ({ id, name: stat.name, count: stat.count }))
+        .filter(stat => stat.name.toLowerCase().includes(mentorSearch.toLowerCase()))
         .sort((a, b) => b.count - a.count);
 
     // Top candidates by session count
@@ -88,6 +91,7 @@ const AdminAnalytics = () => {
     });
     
     const candidateStats = Object.values(candidateMap)
+        .filter(stat => (stat.name || "").toLowerCase().includes(candidateSearch.toLowerCase()))
         .sort((a, b) => b.count - a.count);
 
     const sortedMentorStats = sortData(mentorStats, mentorStatsSort);
@@ -124,6 +128,18 @@ const AdminAnalytics = () => {
 
             {activeTab === 'mentors' && (
                 <div className="admin-table-container">
+                    <div className="table-filter-container">
+                        <input
+                            type="text"
+                            placeholder="Filter by Mentor name..."
+                            value={mentorSearch}
+                            onChange={(e) => {
+                                setMentorSearch(e.target.value);
+                                setMentorsPage(1);
+                            }}
+                            className="admin-search-input"
+                        />
+                    </div>
                     <table className="admin-table">
                         <thead>
                             <tr>
@@ -172,6 +188,18 @@ const AdminAnalytics = () => {
 
             {activeTab === 'candidates' && (
                 <div className="admin-table-container">
+                    <div className="table-filter-container">
+                        <input
+                            type="text"
+                            placeholder="Filter by Candidate name..."
+                            value={candidateSearch}
+                            onChange={(e) => {
+                                setCandidateSearch(e.target.value);
+                                setCandidatesPage(1);
+                            }}
+                            className="admin-search-input"
+                        />
+                    </div>
                     <table className="admin-table">
                         <thead>
                             <tr>

@@ -37,7 +37,7 @@
 .admin-main-title {
     font-size: clamp(1.8rem, 5vw, 2.5rem);
     margin: 0;
-    color: #000;
+    color: white;
     text-transform: uppercase;
     font-weight: 800;
     letter-spacing: 1px;
@@ -149,11 +149,24 @@
     border: 1px solid #eee;
 }
 
+.table-filter-container {
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+    background: #fcfcfc;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.table-filter-container .admin-search-input {
+    max-width: 400px;
+}
+
 .admin-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    min-width: 800px; /* guarantees scrolling on smaller screens */
+    min-width: 800px;
+    /* guarantees scrolling on smaller screens */
 }
 
 .admin-table th {
