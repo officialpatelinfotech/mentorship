@@ -754,6 +754,7 @@
         width: 220px;
     }
 }
+
 /* Agora Session Styles */
 .booking-actions {
     margin-top: 20px;
@@ -778,7 +779,7 @@
 .join-session-btn:hover {
     background: #333;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .join-session-btn svg {
@@ -836,7 +837,7 @@
     flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 24px;
-    padding-bottom: 16px;
+    padding-bottom: 20px;
     border-bottom: 1px dashed #eee;
 }
 
@@ -850,8 +851,8 @@
     background-color: #fafafa;
     outline: none;
     transition: all 0.2s;
-    min-width: 200px;
-    flex: 1 1 200px;
+    width: 240px;
+    flex: 0 0 240px;
 }
 
 .filter-input-text:focus {

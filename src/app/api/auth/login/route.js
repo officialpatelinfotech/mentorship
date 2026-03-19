@@ -6,7 +6,7 @@ import { signToken } from '@/lib/auth';
 
 export async function POST(req) {
     try {
-        const { identifier, password } = await req.json();
+        const { identifier, password, otpMode, otpVerified } = await req.json();
 
         if (!identifier || !password) {
             return NextResponse.json({ success: false, message: 'Please provide email/phone and password' }, { status: 400 });
@@ -30,6 +30,20 @@ export async function POST(req) {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+        }
+
+        // OTP Mode: Just validate credentials and return email for OTP
+        if (otpMode) {
+            return NextResponse.json({ 
+                success: true, 
+                message: 'Credentials valid. OTP required.', 
+                email: user.email 
+            }, { status: 200 });
+        }
+
+        // If not OTP verified, reject
+        if (!otpVerified) {
+            return NextResponse.json({ success: false, message: 'Email verification required' }, { status: 403 });
         }
 
         // Generate JWT token

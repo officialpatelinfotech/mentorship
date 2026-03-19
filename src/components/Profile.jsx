@@ -217,8 +217,17 @@ const Profile = () => {
                     <h3>Upcoming</h3>
                     <p className="stat-value">
                         {bookings.filter(b => {
-                            const bookingDateTimeString = `${b.sessionDate?.split('T')[0]} ${b.sessionTime}`;
-                            return new Date(bookingDateTimeString) >= new Date();
+                            if (!b.sessionDate || !b.sessionTime) return false;
+                            const d = new Date(b.sessionDate);
+                            const timeParts = b.sessionTime.split(' ');
+                            if (timeParts.length === 2) {
+                                const [time, modifier] = timeParts;
+                                let [hours, minutes] = time.split(':').map(Number);
+                                if (modifier === 'PM' && hours < 12) hours += 12;
+                                if (modifier === 'AM' && hours === 12) hours = 0;
+                                d.setHours(hours, minutes, 0, 0);
+                            }
+                            return d >= new Date();
                         }).length}
                     </p>
                 </div>
@@ -233,10 +242,10 @@ const Profile = () => {
 
         // Apply Filters
         const filteredBookings = bookings.filter((booking) => {
-            const matchName = user.role === 'student' 
+            const matchName = user.role === 'student'
                 ? booking.mentorName?.toLowerCase().includes(filterName.toLowerCase())
                 : booking.candidateName?.toLowerCase().includes(filterName.toLowerCase());
-            
+
             const matchEmail = booking.email?.toLowerCase().includes(filterEmail.toLowerCase());
             const matchDate = filterDate ? booking.sessionDate?.startsWith(filterDate) : true;
             const matchTime = filterTime ? booking.sessionTime?.includes(filterTime) : true;
@@ -271,7 +280,7 @@ const Profile = () => {
                     <>
                         {/* Filters UI */}
                         <div className="bookings-filters">
-                            <input 
+                            <input
                                 type="text"
                                 list="name-options"
                                 placeholder={user.role === 'student' ? "Filter by Mentor Name" : "Filter by Candidate Name"}
@@ -287,7 +296,7 @@ const Profile = () => {
 
                             {user.role === 'professional' && (
                                 <>
-                                    <input 
+                                    <input
                                         type="text"
                                         list="email-options"
                                         placeholder="Filter by Email"
@@ -303,17 +312,17 @@ const Profile = () => {
                                 </>
                             )}
 
-                            <input 
+                            <input
                                 type="date"
                                 value={filterDate}
                                 onChange={(e) => { setFilterDate(e.target.value); setCurrentPage(1); }}
                                 className="filter-input-text"
                             />
 
-                            <input 
+                            <input
                                 type="text"
                                 list="time-options"
-                                placeholder="Filter by Slot (e.g. 10:00 AM)"
+                                placeholder="Filter by Slot"
                                 value={filterTime}
                                 onChange={(e) => { setFilterTime(e.target.value); setCurrentPage(1); }}
                                 className="filter-input-text"
@@ -336,61 +345,69 @@ const Profile = () => {
                         ) : (
                             <div className="bookings-grid">
                                 {currentBookings.map((booking) => {
-                                // Combine sessionDate and sessionTime for accurate comparison
-                                const bookingDateTimeString = `${booking.sessionDate.split('T')[0]} ${booking.sessionTime}`;
-                                const isUpcoming = new Date(bookingDateTimeString) >= new Date();
-                                return (
-                                    <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                        <div className="booking-card-header">
-                                            <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
-                                                {isUpcoming ? 'Upcoming' : 'Completed'}
-                                            </span>
-                                            <span className="booking-date">
-                                                {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </span>
-                                        </div>
-                                        <div className="booking-card-body">
-                                            <h4 className="booking-reason">{booking.sessionReason}</h4>
-
-                                            {user.role === 'student' ? (
-                                                <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
-                                            ) : (
-                                                <div className="booking-person-details">
-                                                    <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
-                                                    <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
-                                                    <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
-                                                </div>
-                                            )}
-
-                                            <div className="booking-details">
-                                                <div className="detail-item">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                                    {booking.sessionTime}
-                                                </div>
+                                    // Combine sessionDate and sessionTime for accurate comparison
+                                    const d = new Date(booking.sessionDate);
+                                    const timeParts = booking.sessionTime.split(' ');
+                                    if (timeParts.length === 2) {
+                                        const [time, modifier] = timeParts;
+                                        let [hours, minutes] = time.split(':').map(Number);
+                                        if (modifier === 'PM' && hours < 12) hours += 12;
+                                        if (modifier === 'AM' && hours === 12) hours = 0;
+                                        d.setHours(hours, minutes, 0, 0);
+                                    }
+                                    const isUpcoming = d >= new Date();
+                                    return (
+                                        <div key={booking._id} className={`booking-card ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                            <div className="booking-card-header">
+                                                <span className={`status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                                    {isUpcoming ? 'Upcoming' : 'Completed'}
+                                                </span>
+                                                <span className="booking-date">
+                                                    {new Date(booking.sessionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                </span>
                                             </div>
+                                            <div className="booking-card-body">
+                                                <h4 className="booking-reason">{booking.sessionReason}</h4>
 
-                                            {isUpcoming && (
-                                                <div className="booking-actions">
-                                                    <a 
-                                                        href={`/session/${booking._id}`} 
-                                                        className="join-session-btn"
-                                                        target="_blank"
-                                                    >
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                                                        Join Session
-                                                    </a>
+                                                {user.role === 'student' ? (
+                                                    <p className="booking-person"><strong>Mentor:</strong> {booking.mentorName}</p>
+                                                ) : (
+                                                    <div className="booking-person-details">
+                                                        <p className="booking-person"><strong>Candidate Name:</strong> {booking.candidateName}</p>
+                                                        <p className="booking-person"><strong>Qualification:</strong> {booking.qualification}</p>
+                                                        <p className="booking-person"><strong>Email:</strong> {booking.email}</p>
+                                                    </div>
+                                                )}
+
+                                                <div className="booking-details">
+                                                    <div className="detail-item">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                        {booking.sessionTime}
+                                                    </div>
                                                 </div>
-                                            )}
+
+                                                {isUpcoming && (
+                                                    <div className="booking-actions">
+                                                        <a
+                                                            href={`/session/${booking._id}`}
+                                                            className="join-session-btn"
+                                                            target="_blank"
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                                            Join Session
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    );
+                                })}
+                            </div>
                         )}
                         {filteredBookings.length > 0 && (
                             <div className="pagination">
-                                <button 
-                                    onClick={() => paginate(currentPage - 1)} 
+                                <button
+                                    onClick={() => paginate(currentPage - 1)}
                                     disabled={currentPage === 1}
                                     className="pagination-btn"
                                 >
@@ -399,8 +416,8 @@ const Profile = () => {
                                 <span className="pagination-info">
                                     Page {currentPage} of {totalPages}
                                 </span>
-                                <button 
-                                    onClick={() => paginate(currentPage + 1)} 
+                                <button
+                                    onClick={() => paginate(currentPage + 1)}
                                     disabled={currentPage === totalPages}
                                     className="pagination-btn"
                                 >

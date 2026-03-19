@@ -7,7 +7,7 @@ import { sendSignupEmails } from '@/lib/mail';
 
 export async function POST(req) {
     try {
-        const { name, email, password, role, phone, latestQualification, interest, qualification, profession, photo, professionalPhoto } = await req.json();
+        const { name, email, password, role, phone, latestQualification, interest, qualification, profession, photo, professionalPhoto, otpMode, otpVerified } = await req.json();
 
         if (!name || !email || !password) {
             return NextResponse.json({ success: false, message: 'Please provide all required fields' }, { status: 400 });
@@ -19,6 +19,26 @@ export async function POST(req) {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return NextResponse.json({ success: false, message: 'User already exists' }, { status: 400 });
+        }
+
+        // OTP Mode: Just validate that user can be created, don't create yet
+        if (otpMode) {
+            // Also check phone uniqueness
+            if (phone) {
+                const existingPhone = await User.findOne({ phone });
+                if (existingPhone) {
+                    return NextResponse.json({ success: false, message: 'Phone number already registered' }, { status: 400 });
+                }
+            }
+            return NextResponse.json({ 
+                success: true, 
+                message: 'Validation passed. OTP required.' 
+            }, { status: 200 });
+        }
+
+        // If not OTP verified, reject
+        if (!otpVerified) {
+            return NextResponse.json({ success: false, message: 'Email verification required' }, { status: 403 });
         }
 
         // Hash password

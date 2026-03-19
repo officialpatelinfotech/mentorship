@@ -162,7 +162,16 @@ const AdminDashboard = ({ initialTab = "all" }) => {
         
         const matchesReason = filterReason === 'all' || booking.sessionReason === filterReason;
         
-        const isUpcoming = new Date(booking.sessionDate) > new Date();
+        const d = new Date(booking.sessionDate);
+        const timeParts = (booking.sessionTime || "").split(' ');
+        if (timeParts.length === 2) {
+            const [time, modifier] = timeParts;
+            let [hours, minutes] = time.split(':').map(Number);
+            if (modifier === 'PM' && hours < 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+            d.setHours(hours, minutes, 0, 0);
+        }
+        const isUpcoming = d >= new Date();
         const status = isUpcoming ? 'upcoming' : 'completed';
         const matchesStatus = filterStatus === 'all' || status === filterStatus;
 
@@ -234,7 +243,16 @@ const AdminDashboard = ({ initialTab = "all" }) => {
                         </thead>
                         <tbody>
                             {selectedMentor.bookings.map(b => {
-                                const isUpcoming = new Date(b.sessionDate) >= new Date();
+                                const d = new Date(b.sessionDate);
+                                const timeParts = (b.sessionTime || "").split(' ');
+                                if (timeParts.length === 2) {
+                                    const [time, modifier] = timeParts;
+                                    let [hours, minutes] = time.split(':').map(Number);
+                                    if (modifier === 'PM' && hours < 12) hours += 12;
+                                    if (modifier === 'AM' && hours === 12) hours = 0;
+                                    d.setHours(hours, minutes, 0, 0);
+                                }
+                                const isUpcoming = d >= new Date();
                                 return (
                                     <tr key={b._id}>
                                         <td data-label="Date & Time">{new Date(b.sessionDate).toLocaleDateString()} at {b.sessionTime}</td>
@@ -348,7 +366,16 @@ const AdminDashboard = ({ initialTab = "all" }) => {
                         <tbody>
                             {currentBookings.length > 0 ? (
                                 currentBookings.map((booking) => {
-                                    const isUpcoming = new Date(booking.sessionDate) >= new Date();
+                                    const d = new Date(booking.sessionDate);
+                                    const timeParts = (booking.sessionTime || "").split(' ');
+                                    if (timeParts.length === 2) {
+                                        const [time, modifier] = timeParts;
+                                        let [hours, minutes] = time.split(':').map(Number);
+                                        if (modifier === 'PM' && hours < 12) hours += 12;
+                                        if (modifier === 'AM' && hours === 12) hours = 0;
+                                        d.setHours(hours, minutes, 0, 0);
+                                    }
+                                    const isUpcoming = d >= new Date();
                                     return (
                                         <tr key={booking._id} className={isUpcoming ? 'row-upcoming' : 'row-past'}>
                                             <td data-label="Date &amp; Time">

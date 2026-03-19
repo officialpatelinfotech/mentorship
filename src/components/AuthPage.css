@@ -429,6 +429,205 @@
     }
 }
 
+/* ===== OTP VERIFICATION SCREEN ===== */
+.otp-verification-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.otp-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 20px;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.otp-back-btn:hover {
+    color: #111;
+}
+
+.otp-header {
+    margin-bottom: 32px;
+}
+
+.otp-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.otp-header h2 {
+    font-size: 1.5rem;
+    color: #111;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+}
+
+.otp-header p {
+    color: #777;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.otp-header p strong {
+    color: #333;
+}
+
+.otp-inputs-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.otp-input {
+    width: 48px;
+    height: 56px;
+    border: 2px solid #d0d5dd;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    color: #111;
+    background: #fafafa;
+    outline: none;
+    transition: all 0.2s ease;
+    caret-color: #111;
+}
+
+.otp-input:focus {
+    border-color: #111;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.otp-input.filled {
+    border-color: #111;
+    background: #fff;
+}
+
+.otp-input.error {
+    border-color: #ef4444;
+    background: #fef2f2;
+    animation: otpShake 0.4s ease-out;
+}
+
+.otp-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes otpShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+.otp-error-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    color: #b91c1c;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 10px 16px;
+    background: #fef2f2;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.otp-verify-btn {
+    width: 100%;
+    margin-top: 0 !important;
+}
+
+.otp-spinner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.otp-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: otpSpin 0.6s linear infinite;
+}
+
+@keyframes otpSpin {
+    to { transform: rotate(360deg); }
+}
+
+.otp-resend-section {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.otp-resend-section p {
+    color: #999;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.otp-timer {
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.otp-resend-btn {
+    background: none;
+    border: none;
+    color: #111;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+}
+
+.otp-resend-btn:hover {
+    color: #555;
+}
+
+.otp-resend-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .auth-page {
@@ -456,5 +655,20 @@
 
     .photo-upload-label span {
         font-size: 0.8rem;
+    }
+
+    .otp-inputs-container {
+        gap: 8px;
+    }
+
+    .otp-input {
+        width: 42px;
+        height: 50px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+    }
+
+    .otp-header h2 {
+        font-size: 1.3rem;
     }
 }

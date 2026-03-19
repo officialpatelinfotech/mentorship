@@ -340,3 +340,52 @@ export async function sendContactEmails({ name, email, phone, subject, message }
 
     return results;
 }
+
+/**
+ * Send OTP Verification Email
+ */
+export async function sendOTPEmail({ email, otp }) {
+    const mailOptions = {
+        from: `"${APP_NAME}" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: `${otp} — Your ${APP_NAME} Verification Code`,
+        text: `Your ${APP_NAME} verification code is: ${otp}. It expires in 5 minutes. Do not share this code with anyone.`,
+        html: `
+            <div style="${commonStyles}">
+                <div style="${containerStyles}">
+                    <div style="${headerStyles}">
+                        <h2 style="margin:0; color:#1a1a1a;">${APP_NAME}</h2>
+                        <p style="color:#666; font-size:14px; margin:4px 0 0;">Verification Code</p>
+                    </div>
+                    <p style="color:#333; font-size:15px; margin-bottom:24px; text-align:center;">
+                        Use the code below to verify your identity:
+                    </p>
+                    <div style="background:#f8f9fb; border:2px dashed #d0d5dd; border-radius:12px; padding:24px; margin-bottom:24px; text-align:center;">
+                        <span style="font-size:2.2rem; font-weight:700; letter-spacing:8px; color:#111;">
+                            ${otp}
+                        </span>
+                    </div>
+                    <p style="color:#999; font-size:13px; text-align:center; margin-bottom:0;">
+                        This code expires in <strong>5 minutes</strong>.<br/>
+                        If you didn't request this, please ignore this email.
+                    </p>
+                    <div style="${footerStyles}">
+                        <p>— ${APP_NAME}</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    };
+
+    try {
+        console.log(`Sending OTP email to: ${email}`);
+        const info = await transporter.sendMail(mailOptions);
+        logEmail({ type: 'otp', to: email, status: 'success', messageId: info.messageId });
+        return info;
+    } catch (err) {
+        console.error(`Failed to send OTP email to ${email}:`, err);
+        logEmail({ type: 'otp', to: email, status: 'error', error: err.message });
+        throw err;
+    }
+}
+

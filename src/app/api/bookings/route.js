@@ -7,6 +7,7 @@ import User from '@/models/User';
 import Professional from '@/models/Professional';
 import { sendBookingEmails } from '@/lib/mail';
 import { verifyAuth } from '@/lib/auth';
+import { createCalendarEvent } from '@/lib/googleCalendar';
 
 export async function GET(req) {
     try {
@@ -86,11 +87,16 @@ export async function POST(req) {
             { isBooked: true }
         );
 
+        // Fetch mentor's email from User model (used for emails & calendar)
+        let mentorUser = null;
+        try {
+            mentorUser = await User.findOne({ mentorId: body.mentorId });
+        } catch (err) {
+            console.error('Failed to fetch mentor user:', err);
+        }
+
         // Send Booking Confirmation Emails (Async)
         try {
-            // Fetch mentor's email from User model
-            const mentorUser = await User.findOne({ mentorId: body.mentorId });
-            
             if (mentorUser) {
                 await sendBookingEmails({
                     candidateName: body.name,
@@ -104,6 +110,25 @@ export async function POST(req) {
             }
         } catch (emailError) {
             console.error('Failed to send booking emails:', emailError);
+        }
+
+        // Create Google Calendar Event (Async - don't fail booking if this fails)
+        try {
+            const calendarResult = await createCalendarEvent({
+                candidateName: body.name,
+                candidateEmail: body.email,
+                mentorName: body.mentorName,
+                mentorEmail: mentorUser?.email || '',
+                sessionDate: body.sessionDate?.split('T')[0],
+                sessionTime: body.sessionTime,
+                sessionReason: body.sessionFor,
+            });
+
+            if (calendarResult) {
+                console.log('Google Calendar event created successfully:', calendarResult.htmlLink);
+            }
+        } catch (calendarError) {
+            console.error('Failed to create Google Calendar event:', calendarError);
         }
 
         return NextResponse.json(
